@@ -21,22 +21,19 @@ const sideBar = [
   },
 ];
 
-export default function HomePage() {
+const HomePage = () => {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         display: "flex",
         background: "#212a3b",
         width: "100vw",
         height: "100vh",
-        padding: 6,
-        gap: 6,
+        padding: 24,
+        gap: 24,
       }}
     >
-      <CardComponent sx={{p: 2}}>
-        {sideBar.map(el => <Typography children={el.label} key={el.value} />)}
-      </CardComponent>
-      <Grid item xs={"auto"} flex="1">
+      <div style={{ flex: "1" }}>
         <Grid container direction={"column"}>
           <Grid item xs={12}>
             <CardComponent sx={{ p: 1 }}>
@@ -45,7 +42,9 @@ export default function HomePage() {
           </Grid>
           Home Page
         </Grid>
-      </Grid>
-    </Box>
+      </div>
+    </div>
   );
-}
+};
+
+export default HomePage;
