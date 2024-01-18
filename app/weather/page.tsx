@@ -25,20 +25,6 @@ export interface ICoordinate {
   latitude: string;
 }
 
-export const formatForecastData = (data: any) => {
-  return {
-    temp: data.main.temp,
-    description: data.weather?.[0]?.description,
-    icon: data.weather?.[0]?.icon,
-    humidity: data.main.humidity,
-    wind: data.wind.speed,
-    feels_like: data.main.feels_like,
-    dt: date.unix(data.dt).utc(false).unix(),
-    uvIndex: data?.uvIndex,
-    airQuality: data?.airQuality,
-  };
-};
-
 export default function WeatherPage() {
   const [coordinate, setCoordinate] = useState<ICoordinate>({
     longitude: "",
@@ -61,6 +47,20 @@ export default function WeatherPage() {
         if (currentCoordinate) setCoordinate(currentCoordinate);
       });
     }
+  };
+
+  const formatForecastData = (data: any) => {
+    return {
+      temp: data.main.temp,
+      description: data.weather?.[0]?.description,
+      icon: data.weather?.[0]?.icon,
+      humidity: data.main.humidity,
+      wind: data.wind.speed,
+      feels_like: data.main.feels_like,
+      dt: date.unix(data.dt).utc(false).unix(),
+      uvIndex: data?.uvIndex,
+      airQuality: data?.airQuality,
+    };
   };
 
   const getUnixData = async (coordinate: ICoordinate, unit: string) => {
