@@ -31,7 +31,6 @@ export default function WeatherPage() {
     latitude: "",
   });
   const [city, setCity] = useState<string>("");
-  undefined;
 
   const [weeklyList, setWeeklyList] = useState<any>([]);
   const [forecast, setForecast] = useState<ICurrentForecast | undefined>(

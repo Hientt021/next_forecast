@@ -1,20 +1,10 @@
 import CardComponent from "@/src/components/CardComponent";
-import { addCurrentTime, date, getDayName } from "@/src/lib/dayjs/date";
-import { Box, Grid, Stack, Typography } from "@mui/material";
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
-import ForecastByHour from "./ForecastByHour";
-import { getIconName } from "@/src/utils/text";
-import DailyForecastChart from "@/src/components/chart/DailyForecastChart";
-import useUnit from "@/src/hook/useUnit";
-import { ICurrentForecast } from "./type";
 import ForecastIcon from "@/src/components/ForecastIcon";
-import { WEATHER_TOKEN } from "@/src/const/token";
-import { callApi } from "@/src/api/callApi";
-import { FORECAST_API } from "@/src/api/const";
-import { ICoordinate, formatForecastData } from "./page";
-import TodayForecast from "./TodayForecast";
 import Loader from "@/src/components/Loader";
+import useUnit from "@/src/hook/useUnit";
+import { Box, Grid, Stack, Typography } from "@mui/material";
+import { useMemo, useState } from "react";
+import TodayForecast from "./TodayForecast";
 
 interface IWeeklyForecast {
   onChange: (value: any) => void;
