@@ -49,7 +49,7 @@ export default function WeatherPage() {
     }
   };
 
-  const formatForecastData = (data: any) => {
+  function formatForecastData(data: any) {
     return {
       temp: data.main.temp,
       description: data.weather?.[0]?.description,
@@ -61,7 +61,7 @@ export default function WeatherPage() {
       uvIndex: data?.uvIndex,
       airQuality: data?.airQuality,
     };
-  };
+  }
 
   const getUnixData = async (coordinate: ICoordinate, unit: string) => {
     const currentForecast = await callApi(WEATHER_API, {
