@@ -4,7 +4,6 @@ import "./globals.css";
 import { lazy } from "react";
 import StoreProvider from "@/src/lib/redux/StoreProvider";
 
-const SideBar = lazy(() => import("../src/components/SideBar"));
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
