@@ -8,7 +8,7 @@ interface IForecastIcon {
 }
 const ForecastIcon = (props: IForecastIcon) => {
   const { data, size } = props;
-  return Object.keys(data).length ? (
+  return data && Object.keys(data).length ? (
     <Image
       width={size}
       height={size}

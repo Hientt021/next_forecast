@@ -3,7 +3,7 @@ import { useAppSelector } from "../lib/redux/store";
 import { UNIT } from "@/app/weather/type";
 
 const useUnit = () => {
-  const { unit } = useAppSelector((state) => state.unit);
+  const { unit } = useAppSelector((state) => state.app);
   const formatUnit = (value?: number | string) => {
     switch (unit) {
       case UNIT.C: {

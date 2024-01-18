@@ -23,17 +23,31 @@ export const addCurrentTime = (
   list: ICurrentForecast[],
   cur: ICurrentForecast
 ) => {
-  const current = date.unix(cur?.dt).utc(true).unix();
-  const arr = [...list];
-  const addIndex = list.findIndex((el, i) => {
-    return i < list.length - 1
-      ? current >= el.dt && current <= list[i + 1].dt
-      : current >= el.dt;
-  });
-  if (addIndex >= 0)
-    arr.splice(addIndex + 1, 0, {
-      ...cur,
-      dt: current,
-    });
-  return arr;
+  // const current = date.unix(cur?.dt).utc(true).unix();
+  // const arr = [...list];
+  // const addIndex = list.findIndex((el, i) => {
+  //   return i < list.length - 1
+  //     ? current >= el.dt && current <= list[i + 1].dt
+  //     : current >= el.dt;
+  // });
+  // if (addIndex >= 0)
+  //   arr.splice(addIndex + 1, 0, {
+  //     ...cur,
+  //     dt: current,
+  //   });
+  return [...list, cur].sort((a, b) => a.dt - b.dt);
+  // return arr;
+};
+
+export const isSameUnixDate = (start: number, end: number) => {
+  const startDate = date.unix(start).utc(false);
+  const endDate = date.unix(end).utc(false);
+
+  return startDate.isSame(endDate, "day");
+};
+
+export const isUnixToday = (start: number) => {
+  const startDate = date.unix(start).utc(false);
+
+  return startDate.isToday();
 };

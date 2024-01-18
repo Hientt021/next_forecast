@@ -3,38 +3,45 @@ import CardComponent from "@/src/components/CardComponent";
 import Loader from "@/src/components/Loader";
 import DailyForecastChart from "@/src/components/chart/DailyForecastChart";
 import { Typography } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AirConditions from "./AirConditions";
 import { ICurrentForecast } from "./type";
+import { useAppSelector } from "@/src/lib/redux/store";
+import {
+  addCurrentTime,
+  date,
+  isSameUnixDate,
+  isUnixToday,
+} from "@/src/lib/dayjs/date";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import useNavigate from "@/src/hook/useNavigate";
 
-interface ITodayForecast {
-  data: ICurrentForecast[];
-  onChange: (value: any) => void;
-}
+interface ITodayForecast {}
 
 export default function TodayForecast(props: ITodayForecast) {
-  const { data, onChange } = props;
-  const [active, setActive] = useState(0);
+  const { list } = useAppSelector((state) => state.app.forecast);
+  const { onQueryChange, query } = useNavigate();
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const dt = Number(query?.dt);
 
-  useEffect(() => {
-    const currentIndex = data.findIndex((el) => el.uvIndex && el.airQuality);
-    setActive(currentIndex > 0 ? currentIndex : 0);
-    onChange(data[currentIndex > 0 ? currentIndex : 0]);
-  }, [data]);
+  const data = useMemo(() => {
+    console.log(list.filter((el) => isSameUnixDate(el.dt, dt)));
+    return list.filter((el) => isSameUnixDate(el.dt, dt));
+  }, [query, list]);
+
+  const index = useMemo(() => data.findIndex((el) => el.dt === dt), [dt, data]);
 
   return (
-    <Loader loading={!data.length}>
-      <CardComponent mt={4} p={3}>
-        <Typography variant="h6" fontWeight={500}>
-          {"Today's Forecast"}
-        </Typography>
-        <DailyForecastChart
-          data={data}
-          active={active}
-          onMarkerClick={setActive}
-        />
-      </CardComponent>
-      <AirConditions data={data[active]} />
-    </Loader>
+    <CardComponent mt={4} p={3}>
+      <Typography variant="h6" fontWeight={500}>
+        {"Today's Forecast"}
+      </Typography>
+      <DailyForecastChart
+        data={data}
+        active={index}
+        onMarkerClick={(i) => onQueryChange({ ...query, dt: data[i].dt })}
+      />
+    </CardComponent>
   );
 }

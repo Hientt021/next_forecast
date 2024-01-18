@@ -67,7 +67,7 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           position: "absolute",
           bottom: 0,
           left: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: "translate(-50%, 0%)",
           rotate: `${-90 + (activeIndex / list.length) * 240}deg`,
         },
       }}

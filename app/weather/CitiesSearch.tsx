@@ -1,5 +1,6 @@
 "use client";
 import { CITIES_TOKEN } from "@/src/const/token";
+import { setCoordinate } from "@/src/lib/redux/features/app/appSlice";
 import { setCurrentLocation } from "@/src/lib/redux/features/location/locationSlice";
 import { useAppDispatch } from "@/src/lib/redux/store";
 import { Autocomplete, TextField } from "@mui/material";
@@ -45,7 +46,7 @@ export default function CitiesSearch({ onSearch }: ICitiesSearch) {
     <Autocomplete
       options={cities}
       onChange={(e, value: ICityProps | null) =>
-        value && dispatch(setCurrentLocation(value))
+        value && dispatch(setCoordinate(value))
       }
       onInputChange={(e, value) => setName(value)}
       sx={{

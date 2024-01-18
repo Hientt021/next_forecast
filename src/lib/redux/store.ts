@@ -1,12 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import unit from "./features/unit/unitSlice";
-import location from "./features/location/locationSlice";
+import app from "./features/app/appSlice";
 
 export const store = configureStore({
   reducer: {
-    unit,
-    location,
+    app,
   },
 });
 

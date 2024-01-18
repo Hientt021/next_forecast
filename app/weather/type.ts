@@ -15,3 +15,11 @@ export enum UNIT {
   F = "imperial",
 }
 export type IUnit = "metric" | "imperial";
+
+export interface IDailyForecast {
+  date: string;
+  min: number;
+  max: number;
+  list: ICurrentForecast[];
+  icon: any;
+}

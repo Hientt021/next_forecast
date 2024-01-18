@@ -16,9 +16,15 @@ import SemiCircle from "@/src/components/SemiCircle";
 import SemiDonutChart from "@/src/components/chart/SemiDonutChart";
 import MasksIcon from "@mui/icons-material/Masks";
 import TemperatureBar from "@/src/components/TemperatureBar";
-interface IAirConditions {
-  data: ICurrentForecast;
-}
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
+import { callApi } from "@/src/api/callApi";
+import { AIR_POLLUTION_API, UVI_API } from "@/src/api/const";
+import { WEATHER_TOKEN } from "@/src/const/token";
+import { formatForecastData } from "@/src/utils/forecast";
+import { useEffect, useMemo } from "react";
+import { setForecast } from "@/src/lib/redux/features/app/appSlice";
+import useNavigate from "@/src/hook/useNavigate";
+interface IAirConditions {}
 
 export interface IProgressList {
   label: string;
@@ -200,8 +206,15 @@ export const getDescription = (value: number, list: IProgressList[]) => {
 };
 
 export default function AirConditions(props: IAirConditions) {
-  const { data } = props;
-  const { formatUnit, unit } = useUnit();
+  const { forecast, coordinate } = useAppSelector((state) => state.app);
+  const { list } = forecast;
+  const { onQueryChange, query } = useNavigate();
+  const dt = Number(query?.dt);
+
+  const current = useMemo(() => {
+    console.log(list.find((el) => el.dt === dt));
+    return list.find((el) => el.dt === dt);
+  }, [list, dt]);
   const contents = [
     {
       label: "Humidity",
@@ -255,22 +268,22 @@ export default function AirConditions(props: IAirConditions) {
     {
       label: "UV Index",
       key: "4",
-      show: !!data?.uvIndex,
+      show: !!current?.uvIndex,
       icon: <Brightness7Icon />,
       render: (value: any) => (
-        <SemiDonutChart list={UV_LIST} max={13} value={data?.uvIndex!!} />
+        <SemiDonutChart list={UV_LIST} max={13} value={value?.uvIndex!!} />
       ),
     },
     {
       label: "Air Quality",
       key: "5",
-      show: !!data?.airQuality,
+      show: !!current?.airQuality,
       icon: <MasksIcon />,
       render: (value: any) => (
         <SemiDonutChart
           list={AIR_POLLUTION_LIST}
           max={5}
-          value={data?.airQuality!!}
+          value={value?.airQuality!!}
         />
       ),
     },
@@ -330,7 +343,7 @@ export default function AirConditions(props: IAirConditions) {
                   </Box>
                 </Box>
 
-                {el.render(data)}
+                {el.render(current)}
               </CardComponent>
             </Grid>
           )

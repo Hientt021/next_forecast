@@ -3,6 +3,7 @@ import { UNIT } from "@/app/weather/type";
 import { Switch, styled } from "@mui/material";
 import { setCurrentUnit } from "../lib/redux/features/unit/unitSlice";
 import { useAppDispatch } from "../lib/redux/store";
+import { setUnit } from "../lib/redux/features/app/appSlice";
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
   padding: 6,
@@ -42,7 +43,7 @@ export default function DegreeSwitch(props: IDegreeSwitch) {
     <StyledSwitch
       defaultChecked
       onChange={(e, checked) => {
-        dispatch(setCurrentUnit(checked ? UNIT.C : UNIT.F));
+        dispatch(setUnit(checked ? UNIT.C : UNIT.F));
       }}
     />
   );
