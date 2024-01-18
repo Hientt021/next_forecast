@@ -21,20 +21,15 @@ export default function TodayForecast(props: ITodayForecast) {
   useEffect(() => {
     const currentIndex = data.findIndex((el) => el.uvIndex && el.airQuality);
     setActive(currentIndex > 0 ? currentIndex : 0);
+    onChange(data[currentIndex > 0 ? currentIndex : 0]);
   }, [data]);
-
-  useEffect(() => {
-    onChange(data[active]);
-  }, [active, data]);
 
   return (
     <Loader loading={!data.length}>
       <CardComponent mt={4} p={3}>
-        <Typography
-          children={"Today's Forecast"}
-          variant="h6"
-          fontWeight={500}
-        />
+        <Typography variant="h6" fontWeight={500}>
+          {"Today's Forecast"}
+        </Typography>
         <DailyForecastChart
           data={data}
           active={active}

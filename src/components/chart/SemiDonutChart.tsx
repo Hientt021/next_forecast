@@ -93,12 +93,15 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           transform: "translate(-50%, -75%)",
         }}
       >
-        <Typography variant="h6" fontWeight={600} children={value} />
+        <Typography variant="h6" fontWeight={600}>
+          {value}
+        </Typography>
         <Typography
           fontWeight={500}
           sx={{ color: "GrayText", fontSize: "0.875rem" }}
-          children={getDescription(value, list)?.label}
-        />
+        >
+          {getDescription(value, list)?.label}
+        </Typography>
       </Box>
       <NavigationIcon className="arrow" />
     </Box>

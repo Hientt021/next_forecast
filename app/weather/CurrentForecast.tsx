@@ -19,19 +19,20 @@ export default function CurrentForecast(props: ICurrentForecast) {
       p={4}
     >
       <Stack justifyContent={"space-between"}>
-        <Typography children={data?.name} variant="h3" fontWeight={600} />
+        <Typography variant="h3" fontWeight={600}>
+          {data?.name}
+        </Typography>
         <Box>
+          <Typography variant="h3" fontWeight={600}>
+            {Math.round(data?.main?.temp) + "°"}
+          </Typography>
           <Typography
-            children={Math.round(data?.main?.temp) + "°"}
-            variant="h3"
-            fontWeight={600}
-          />
-          <Typography
-            children={data?.weather?.[0].description}
             variant="h6"
             fontWeight={600}
             textTransform={"capitalize"}
-          />
+          >
+            {data?.weather?.[0].description}
+          </Typography>
         </Box>
       </Stack>
       {data && (

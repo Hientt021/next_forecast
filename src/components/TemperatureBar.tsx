@@ -39,16 +39,15 @@ export default function TemperatureBar(props: ITemperatureBar) {
         gap={1}
         justifyContent={"center"}
       >
-        <Typography
-          variant="h6"
-          fontWeight={600}
-          children={formatUnit(value)}
-        />
+        <Typography variant="h6" fontWeight={600}>
+          {formatUnit(value)}
+        </Typography>
         <Typography
           fontWeight={500}
           sx={{ color: "GrayText", fontSize: "0.875rem" }}
-          children={currentTemp?.label}
-        />
+        >
+          {currentTemp?.label}
+        </Typography>
       </Box>
       <Slider
         getAriaValueText={(value) => formatUnit(value)}

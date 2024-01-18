@@ -214,16 +214,15 @@ export default function AirConditions(props: IAirConditions) {
             gap={1}
             justifyContent={"center"}
           >
-            <Typography
-              variant="h6"
-              fontWeight={600}
-              children={value?.humidity + "%"}
-            />
+            <Typography variant="h6" fontWeight={600}>
+              {value?.humidity + "%"}
+            </Typography>
             <Typography
               fontWeight={500}
               sx={{ color: "GrayText", fontSize: "0.875rem" }}
-              children={getDescription(value?.humidity, HUMIDITY_LIST)?.label}
-            />
+            >
+              {getDescription(value?.humidity, HUMIDITY_LIST)?.label}
+            </Typography>
           </Box>
 
           <ProgressStep steps={HUMIDITY_LIST} value={value?.humidity} />
@@ -314,7 +313,7 @@ export default function AirConditions(props: IAirConditions) {
                   alignItems={"center"}
                   width={"100%"}
                 >
-                  <Typography children={el.label} fontWeight={600} />
+                  <Typography fontWeight={600}>{el.label}</Typography>
                   <Box
                     className="icon"
                     p={"4px"}

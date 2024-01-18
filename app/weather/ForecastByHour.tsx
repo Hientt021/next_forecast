@@ -17,10 +17,9 @@ export default function ForecastByHour(props: IForecastByHour) {
   };
   return (
     <Stack alignItems={"center"} justifyContent={"space-between"} spacing={2}>
-      <Typography
-        children={date.unix(data.dt).utc(false).format("hh:mm A")}
-        fontWeight={600}
-      />
+      <Typography fontWeight={600}>
+        {date.unix(data.dt).utc(false).format("hh:mm A")}
+      </Typography>
       <Image
         width={width}
         height={height}
@@ -29,11 +28,9 @@ export default function ForecastByHour(props: IForecastByHour) {
           getIconName(data) +
           ".png")}
       />
-      <Typography
-        children={Math.round(data?.main?.temp) + "°"}
-        variant="h6"
-        fontWeight={600}
-      />
+      <Typography variant="h6" fontWeight={600}>
+        {Math.round(data?.main?.temp) + "°"}
+      </Typography>
     </Stack>
   );
 }

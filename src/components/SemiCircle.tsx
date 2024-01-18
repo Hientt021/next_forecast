@@ -48,7 +48,6 @@ const SemiCircle = (props: ISemiCircle) => {
       }}
     >
       <Typography
-        children={0}
         className="step-label"
         sx={{
           position: "absolute",
@@ -56,9 +55,10 @@ const SemiCircle = (props: ISemiCircle) => {
           left: 0,
           transform: "translateX(-200%)",
         }}
-      />
+      >
+        0
+      </Typography>
       <Typography
-        children={max / 2}
         className="step-label"
         sx={{
           position: "absolute",
@@ -66,7 +66,9 @@ const SemiCircle = (props: ISemiCircle) => {
           left: "50%",
           transform: "translate(-50%, -100%)",
         }}
-      />
+      >
+        {max / 2}
+      </Typography>
       <Box
         sx={{
           height: 100,
@@ -76,7 +78,6 @@ const SemiCircle = (props: ISemiCircle) => {
       >
         <Circle percent={percent} />
         <Typography
-          children={label}
           variant="h6"
           fontWeight={600}
           sx={{
@@ -85,11 +86,12 @@ const SemiCircle = (props: ISemiCircle) => {
             left: "50%",
             transform: "translate(-50%, 0)",
           }}
-        />
+        >
+          {label}
+        </Typography>
       </Box>
       <NavigationIcon className="arrow" />
       <Typography
-        children={max}
         className="step-label"
         sx={{
           position: "absolute",
@@ -97,7 +99,9 @@ const SemiCircle = (props: ISemiCircle) => {
           right: 0,
           transform: "translateX(150%)",
         }}
-      />
+      >
+        {max}
+      </Typography>
     </Box>
   );
 };

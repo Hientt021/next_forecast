@@ -40,12 +40,12 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
     <Loader loading={!weeklyList.length} className="wrapper">
       <Grid container p={5} spacing={2}>
         <Grid item xs={10}>
-          <Typography children={"Welcome"} variant="h5" fontWeight={600} />
-          <Typography
-            children={"Check out today's weather information"}
-            variant="h6"
-            fontWeight={500}
-          />
+          <Typography variant="h5" fontWeight={600}>
+            {"Welcome"}
+          </Typography>
+          <Typography variant="h6" fontWeight={500}>
+            {"Check out today's weather information"}
+          </Typography>
           <TodayForecast onChange={onChange} data={todayList} />
         </Grid>
         <Grid
@@ -75,12 +75,11 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
                   }}
                 >
                   <Stack justifyContent={"center"} alignItems={"center"}>
-                    <Typography children={el.date} fontWeight={600} />
+                    <Typography fontWeight={600}>{el.date}</Typography>
                     <ForecastIcon size={80} data={el} />
-                    <Typography
-                      children={formatUnit(el.min) + " / " + formatUnit(el.max)}
-                      fontWeight={600}
-                    />
+                    <Typography fontWeight={600}>
+                      {formatUnit(el.min) + " / " + formatUnit(el.max)}
+                    </Typography>
                   </Stack>
                 </CardComponent>
               );

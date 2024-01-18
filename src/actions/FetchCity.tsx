@@ -1,7 +1,5 @@
 "use client";
 
-import { City } from "@/app/weather/page";
-
 const LOCATION_TOKEN = "0c644d27eebc400c8358d5678702e555";
 
 export default async function FetchCity(position: any) {

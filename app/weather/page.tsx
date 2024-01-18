@@ -193,29 +193,26 @@ export default function WeatherPage() {
         </Box>
 
         <Box display="flex" justifyContent={"space-between"} width={"100%"}>
-          <Typography fontWeight={600} children={city} />
-          <Typography fontWeight={600} children={date().format("hh:mm")} />
+          <Typography fontWeight={600}>{city}</Typography>
+          <Typography fontWeight={600}>{date().format("hh:mm")}</Typography>
         </Box>
         <Box display="flex" justifyContent={"space-between"} width={"100%"}>
-          <Typography
-            fontWeight={600}
-            children={date().format("MMM DD, YYYY")}
-          />
+          <Typography fontWeight={600}>
+            {date().format("MMM DD, YYYY")}
+          </Typography>
         </Box>
-        <Typography
-          my={3}
-          variant="h2"
-          fontWeight={600}
-          children={formatUnit(forecast?.temp)}
-        />
+        <Typography my={3} variant="h2" fontWeight={600}>
+          {formatUnit(forecast?.temp)}
+        </Typography>
         <Box display={"flex"} gap={2}>
           <ForecastIcon size={50} data={forecast!!} />
           <Typography
             mt={2}
             fontWeight={600}
-            children={forecast?.description}
             sx={{ textTransform: "capitalize" }}
-          />
+          >
+            {forecast?.description}
+          </Typography>
         </Box>
         <Box
           sx={{

@@ -66,7 +66,7 @@ export default function ProgressStep(props: IProgressStep) {
     <Grid container spacing={gap}>
       {stepArray.map((el, i) => (
         <Grid key={i} item xs={12 / steps.length}>
-          <Typography className="step-label" children={steps[i].label} />
+          <Typography className="step-label">{steps[i].label}</Typography>
           <LinearProgress
             sx={{ borderRadius: "1rem", height: "0.5rem" }}
             key={i}
