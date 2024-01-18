@@ -99,10 +99,7 @@ export default function WeatherPage() {
   };
 
   useEffect(() => {
-    window.addEventListener("load", init);
-    return () => {
-      window.removeEventListener("load", init);
-    };
+    typeof window !== "undefined" && init();
   }, []);
 
   const getWeeklyData = async (coordinate: ICoordinate, unit: string) => {
