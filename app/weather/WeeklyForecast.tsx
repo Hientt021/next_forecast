@@ -1,3 +1,4 @@
+"use client";
 import CardComponent from "@/src/components/CardComponent";
 import ForecastIcon from "@/src/components/ForecastIcon";
 import Loader from "@/src/components/Loader";

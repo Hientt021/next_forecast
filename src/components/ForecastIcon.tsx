@@ -1,3 +1,4 @@
+"use client";
 import { ICurrentForecast } from "@/app/weather/type";
 import Image from "next/image";
 

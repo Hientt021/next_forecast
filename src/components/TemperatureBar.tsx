@@ -1,3 +1,4 @@
+"use client";
 import { Box, Slider, Stack, Typography } from "@mui/material";
 import useUnit from "../hook/useUnit";
 import { getDescription } from "@/app/weather/AirConditions";

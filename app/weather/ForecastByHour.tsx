@@ -1,3 +1,4 @@
+"use client";
 import CardComponent from "@/src/components/CardComponent";
 import { date } from "@/src/lib/dayjs/date";
 import { Grid, Stack, Typography } from "@mui/material";

@@ -1,3 +1,4 @@
+"use client";
 import CardComponent from "@/src/components/CardComponent";
 import AirIcon from "@mui/icons-material/Air";
 import Brightness7Icon from "@mui/icons-material/Brightness7";

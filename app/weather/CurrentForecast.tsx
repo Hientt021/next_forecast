@@ -1,3 +1,4 @@
+"use client";
 import CardComponent from "@/src/components/CardComponent";
 import { date, getDayName } from "@/src/lib/dayjs/date";
 import { getIconName } from "@/src/utils/text";

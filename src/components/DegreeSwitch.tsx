@@ -1,3 +1,4 @@
+"use client";
 import { UNIT } from "@/app/weather/type";
 import { Switch, styled } from "@mui/material";
 import { setCurrentUnit } from "../lib/redux/features/unit/unitSlice";
