@@ -1,3 +1,4 @@
+"use client";
 import { Box, BoxProps, CircularProgress } from "@mui/material";
 interface ILoader extends BoxProps {
   children: any;
