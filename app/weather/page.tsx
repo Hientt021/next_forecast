@@ -158,82 +158,83 @@ export default function WeatherPage() {
   }, [coordinate, unit]);
 
   return (
-    <Loader
-      loading={!(coordinate.latitude && coordinate.longitude)}
-      className="main"
-    >
-      <Loader
-        loading={!forecast}
-        sx={{
-          color: "white",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          width: "20%",
-          p: 5,
-          position: "relative",
-        }}
-      >
-        <Box
-          display="flex"
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          width={"100%"}
-        >
-          <CitiesSearch
-            onSearch={(city) => {
-              setCoordinate({
-                latitude: city.latitude.toString(),
-                longitude: city.longitude.toString(),
-              });
-            }}
-          />{" "}
-          <DegreeSwitch />
-        </Box>
+    <div></div>
+    // <Loader
+    //   loading={!(coordinate.latitude && coordinate.longitude)}
+    //   className="main"
+    // >
+    //   <Loader
+    //     loading={!forecast}
+    //     sx={{
+    //       color: "white",
+    //       display: "flex",
+    //       flexDirection: "column",
+    //       alignItems: "center",
+    //       width: "20%",
+    //       p: 5,
+    //       position: "relative",
+    //     }}
+    //   >
+    //     <Box
+    //       display="flex"
+    //       justifyContent={"space-between"}
+    //       alignItems={"center"}
+    //       width={"100%"}
+    //     >
+    //       <CitiesSearch
+    //         onSearch={(city) => {
+    //           setCoordinate({
+    //             latitude: city.latitude.toString(),
+    //             longitude: city.longitude.toString(),
+    //           });
+    //         }}
+    //       />{" "}
+    //       <DegreeSwitch />
+    //     </Box>
 
-        <Box display="flex" justifyContent={"space-between"} width={"100%"}>
-          <Typography fontWeight={600}>{city}</Typography>
-          <Typography fontWeight={600}>{date().format("hh:mm")}</Typography>
-        </Box>
-        <Box display="flex" justifyContent={"space-between"} width={"100%"}>
-          <Typography fontWeight={600}>
-            {date().format("MMM DD, YYYY")}
-          </Typography>
-        </Box>
-        <Typography my={3} variant="h2" fontWeight={600}>
-          {formatUnit(forecast?.temp)}
-        </Typography>
-        <Box display={"flex"} gap={2}>
-          <ForecastIcon size={50} data={forecast!!} />
-          <Typography
-            mt={2}
-            fontWeight={600}
-            sx={{ textTransform: "capitalize" }}
-          >
-            {forecast?.description}
-          </Typography>
-        </Box>
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            fontSize: 20,
-            width: "100%",
-            height: 400,
-          }}
-        >
-          <Image
-            alt=""
-            src={require("@/public/images/backgrounds/city.svg")}
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          />
-        </Box>
-      </Loader>
+    //     <Box display="flex" justifyContent={"space-between"} width={"100%"}>
+    //       <Typography fontWeight={600}>{city}</Typography>
+    //       <Typography fontWeight={600}>{date().format("hh:mm")}</Typography>
+    //     </Box>
+    //     <Box display="flex" justifyContent={"space-between"} width={"100%"}>
+    //       <Typography fontWeight={600}>
+    //         {date().format("MMM DD, YYYY")}
+    //       </Typography>
+    //     </Box>
+    //     <Typography my={3} variant="h2" fontWeight={600}>
+    //       {formatUnit(forecast?.temp)}
+    //     </Typography>
+    //     <Box display={"flex"} gap={2}>
+    //       <ForecastIcon size={50} data={forecast!!} />
+    //       <Typography
+    //         mt={2}
+    //         fontWeight={600}
+    //         sx={{ textTransform: "capitalize" }}
+    //       >
+    //         {forecast?.description}
+    //       </Typography>
+    //     </Box>
+    //     <Box
+    //       sx={{
+    //         position: "absolute",
+    //         bottom: 0,
+    //         fontSize: 20,
+    //         width: "100%",
+    //         height: 400,
+    //       }}
+    //     >
+    //       <Image
+    //         alt=""
+    //         src={require("@/public/images/backgrounds/city.svg")}
+    //         style={{
+    //           width: "100%",
+    //           height: "100%",
+    //         }}
+    //       />
+    //     </Box>
+    //   </Loader>
 
-      <WeeklyForecast weeklyList={weeklyList} onChange={setForecast} />
-    </Loader>
+    //   <WeeklyForecast weeklyList={weeklyList} onChange={setForecast} />
+    // </Loader>
   );
 }
