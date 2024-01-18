@@ -1,8 +1,6 @@
-import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
-import createSagaMiddleware from "redux-saga";
-import { locationSlice } from "./features/location/locationSlice";
-import unit from "./features/unit/unitSlice";
+import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import unit from "./features/unit/unitSlice";
 
 export const store = configureStore({
   reducer: {
