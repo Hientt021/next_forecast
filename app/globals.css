@@ -17,6 +17,35 @@
 }
 
 body {
+  
+  .main {
+    overflow: hidden;
+    background: #5C9CE5;
+    color: #0A0A0B;
+    font-family: Inter,sans-serif;
+    height: 100vh;
+    display: flex
+  }
+  .wrapper {
+    background-color: #E3F1FF; 
+    border-bottom-left-radius: 6rem;
+    border-top-left-radius: 6rem;
+    flex: 1
+  }
+  .scroll::-webkit-scrollbar {
+    width: 6px;
+    padding-left: 6px;
+    background-color: #F5F5F5; 
+    border-radius: 25px;
+  }
+
+  .scroll::-webkit-scrollbar-thumb {
+    background: rgb(167, 202, 237);
+    border-radius: 25px;
+  }
+
+
+
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
@@ -24,4 +53,5 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+
 }
