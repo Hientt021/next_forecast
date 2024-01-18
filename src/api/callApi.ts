@@ -1,3 +1,4 @@
+"use client";
 export const callApi = async (
   url: string,
   params: any,
