@@ -1,5 +1,7 @@
 "use client";
 import { CITIES_TOKEN } from "@/src/const/token";
+import { setCurrentLocation } from "@/src/lib/redux/features/location/locationSlice";
+import { useAppDispatch } from "@/src/lib/redux/store";
 import { Autocomplete, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -14,10 +16,11 @@ export interface ICityProps {
 }
 
 export interface ICitiesSearch {
-  onSearch: (city: ICityProps) => void;
+  onSearch?: (city: ICityProps) => void;
 }
 
 export default function CitiesSearch({ onSearch }: ICitiesSearch) {
+  const dispatch = useAppDispatch();
   const [name, setName] = useState("");
   const [cities, setCities] = useState([]);
   const api = `https://api.api-ninjas.com/v1/city?name=${name}&limit=30`;
@@ -41,7 +44,9 @@ export default function CitiesSearch({ onSearch }: ICitiesSearch) {
   return (
     <Autocomplete
       options={cities}
-      onChange={(e, value: ICityProps | null) => value && onSearch(value)}
+      onChange={(e, value: ICityProps | null) =>
+        value && dispatch(setCurrentLocation(value))
+      }
       onInputChange={(e, value) => setName(value)}
       sx={{
         ".MuiOutlinedInput-notchedOutline": {

@@ -1,10 +1,8 @@
+import { ICoordinate } from "@/app/weather/page";
 import { createSlice } from "@reduxjs/toolkit";
 
 interface ILocationSlice {
-  location: {
-    latitude?: string;
-    longitude?: string;
-  };
+  location: ICoordinate;
 }
 
 const initialState: ILocationSlice = {
@@ -18,7 +16,9 @@ export const locationSlice = createSlice({
   name: "location",
   initialState,
   reducers: {
-    setCurrentLocation: (state, action) => (state.location = action.payload),
+    setCurrentLocation: (state, action) => {
+      state.location = action.payload;
+    },
   },
 });
 
