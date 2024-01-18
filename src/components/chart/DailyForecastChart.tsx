@@ -3,7 +3,7 @@ import { ICurrentForecast } from "@/app/weather/type";
 import { date } from "@/src/lib/dayjs/date";
 import { Box } from "@mui/material";
 import React, { Component, useMemo } from "react";
-import Chart from "react-apexcharts";
+import ApexChart from "./ApexChart";
 
 interface IDailyForecastChart {
   data: ICurrentForecast[];
@@ -127,7 +127,7 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
         },
       }}
     >
-      <Chart
+      <ApexChart
         options={options as any}
         series={series}
         type="area"

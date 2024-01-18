@@ -1,14 +1,11 @@
 "use client";
 import CardComponent from "@/src/components/CardComponent";
-import { date } from "@/src/lib/dayjs/date";
-import { Grid, Stack, Typography } from "@mui/material";
-import Image from "next/image";
-import ForecastByHour from "./ForecastByHour";
-import DailyForecastChart from "@/src/components/chart/DailyForecastChart";
-import { ICurrentForecast } from "./type";
-import AirConditions from "./AirConditions";
-import { useEffect, useState } from "react";
 import Loader from "@/src/components/Loader";
+import DailyForecastChart from "@/src/components/chart/DailyForecastChart";
+import { Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import AirConditions from "./AirConditions";
+import { ICurrentForecast } from "./type";
 
 interface ITodayForecast {
   data: ICurrentForecast[];

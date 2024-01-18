@@ -2,8 +2,8 @@
 import { Box, Typography, styled } from "@mui/material";
 import { useMemo } from "react";
 import NavigationIcon from "@mui/icons-material/Navigation";
-import ReactApexChart from "react-apexcharts";
 import { UV_LIST, getDescription } from "@/app/weather/AirConditions";
+import ApexChart from "./ApexChart";
 interface ISemiDonutChart {
   value: number;
   max: number;
@@ -79,7 +79,7 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           position: "relative",
         }}
       >
-        <ReactApexChart options={options as any} series={series} type="donut" />
+        <ApexChart options={options as any} series={series} type="donut" />
       </Box>
 
       <Box
