@@ -153,6 +153,7 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
             {weekly.map((el: any, i: number) => {
               return (
                 <WeeklyItem
+                  key={i}
                   active={active === i}
                   onClick={() => {
                     setActive(i);
