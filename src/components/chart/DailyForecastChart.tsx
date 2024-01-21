@@ -19,7 +19,7 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       enabled: true,
       offsetY: -10,
       style: {
-        fontSize: 16,
+        fontSize: "1rem",
       },
       background: {
         enabled: false,
@@ -52,10 +52,10 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       tickAmount: data.length,
       labels: {
         formatter: (value: number) => {
-          return date.unix(value).utc(false).format("HH:mm");
+          return date.unix(value).format("HH:mm");
         },
         style: {
-          fontSize: 16,
+          fontSize: "1rem",
           fontWeight: 600,
         },
       },

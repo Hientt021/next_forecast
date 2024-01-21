@@ -1,30 +1,19 @@
 "use client";
 import CardComponent from "@/src/components/CardComponent";
+import ProgressStep from "@/src/components/ProgressStep";
+import SemiCircle from "@/src/components/SemiCircle";
+import TemperatureBar from "@/src/components/TemperatureBar";
+import SemiDonutChart from "@/src/components/chart/SemiDonutChart";
 import AirIcon from "@mui/icons-material/Air";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import MasksIcon from "@mui/icons-material/Masks";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
-import { Box, Grid, Rating, Stack, Stepper, Typography } from "@mui/material";
-import LinearProgress, {
-  linearProgressClasses,
-} from "@mui/material/LinearProgress";
-import { styled } from "@mui/material/styles";
-import ProgressStep from "@/src/components/ProgressStep";
-import useUnit from "@/src/hook/useUnit";
-import { ICurrentForecast, UNIT } from "./type";
-import SemiCircle from "@/src/components/SemiCircle";
-import SemiDonutChart from "@/src/components/chart/SemiDonutChart";
-import MasksIcon from "@mui/icons-material/Masks";
-import TemperatureBar from "@/src/components/TemperatureBar";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
-import { callApi } from "@/src/api/callApi";
-import { AIR_POLLUTION_API, UVI_API } from "@/src/api/const";
-import { WEATHER_TOKEN } from "@/src/const/token";
-import { formatForecastData } from "@/src/utils/forecast";
-import { useEffect, useMemo } from "react";
-import { setForecast } from "@/src/lib/redux/features/app/appSlice";
-import useNavigate from "@/src/hook/useNavigate";
-interface IAirConditions {}
+import { Box, Grid, Stack, Typography } from "@mui/material";
+import { ICurrentForecast } from "./type";
+interface IAirConditions {
+  currentData: ICurrentForecast;
+}
 
 export interface IProgressList {
   label: string;
@@ -171,6 +160,12 @@ const OUTDOOR_TEMPERATURE = [
     color: "#0F0748",
     show: true,
   },
+  {
+    value: -30,
+    label: "Life-threatening",
+    color: "#0F0748",
+    show: true,
+  },
 ];
 
 const AIR_POLLUTION_LIST = [
@@ -206,15 +201,8 @@ export const getDescription = (value: number, list: IProgressList[]) => {
 };
 
 export default function AirConditions(props: IAirConditions) {
-  const { forecast, coordinate } = useAppSelector((state) => state.app);
-  const { list } = forecast;
-  const { onQueryChange, query } = useNavigate();
-  const dt = Number(query?.dt);
+  const { currentData } = props;
 
-  const current = useMemo(() => {
-    console.log(list.find((el) => el.dt === dt));
-    return list.find((el) => el.dt === dt);
-  }, [list, dt]);
   const contents = [
     {
       label: "Humidity",
@@ -268,7 +256,7 @@ export default function AirConditions(props: IAirConditions) {
     {
       label: "UV Index",
       key: "4",
-      show: !!current?.uvIndex,
+      show: !!currentData?.uvIndex,
       icon: <Brightness7Icon />,
       render: (value: any) => (
         <SemiDonutChart list={UV_LIST} max={13} value={value?.uvIndex!!} />
@@ -277,7 +265,7 @@ export default function AirConditions(props: IAirConditions) {
     {
       label: "Air Quality",
       key: "5",
-      show: !!current?.airQuality,
+      show: !!currentData?.airQuality,
       icon: <MasksIcon />,
       render: (value: any) => (
         <SemiDonutChart
@@ -305,49 +293,50 @@ export default function AirConditions(props: IAirConditions) {
         },
       }}
     >
-      {contents.map(
-        (el) =>
-          (el.show || el.show === undefined) && (
-            <Grid
-              item
-              xs={4}
-              key={el.key}
-              display="flex"
-              gap={2}
-              sx={{
-                ".icon": {
-                  svg: { fontSize: 20, path: { fill: "white " } },
-                },
-              }}
-            >
-              <CardComponent p={3} width={"100%"}>
-                <Box
-                  display="flex"
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  width={"100%"}
-                >
-                  <Typography fontWeight={600}>{el.label}</Typography>
+      {currentData &&
+        contents.map(
+          (el) =>
+            (el.show || el.show === undefined) && (
+              <Grid
+                item
+                xs={4}
+                key={el.key}
+                display="flex"
+                gap={2}
+                sx={{
+                  ".icon": {
+                    svg: { fontSize: "1.25rem", path: { fill: "white " } },
+                  },
+                }}
+              >
+                <CardComponent p={3} width={"100%"}>
                   <Box
-                    className="icon"
-                    p={"4px"}
-                    sx={{
-                      background: "#5C9CE5",
-                      borderRadius: "50%",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
+                    display="flex"
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                    width={"100%"}
                   >
-                    {el.icon}
+                    <Typography fontWeight={600}>{el.label}</Typography>
+                    <Box
+                      className="icon"
+                      p={"4px"}
+                      sx={{
+                        background: "#5C9CE5",
+                        borderRadius: "50%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      {el.icon}
+                    </Box>
                   </Box>
-                </Box>
 
-                {el.render(current)}
-              </CardComponent>
-            </Grid>
-          )
-      )}
+                  {el.render(currentData)}
+                </CardComponent>
+              </Grid>
+            )
+        )}
     </Grid>
   );
 }

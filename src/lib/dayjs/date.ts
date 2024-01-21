@@ -4,6 +4,8 @@ import isToday from "dayjs/plugin/isToday";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isBetween from "dayjs/plugin/isBetween";
+import IsoWeek from "dayjs/plugin/IsoWeek";
+
 import { ICurrentForecast } from "@/app/weather/type";
 
 dayjs.extend(utc);
@@ -11,6 +13,7 @@ dayjs.extend(isToday);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isBetween);
+dayjs.extend(IsoWeek);
 
 export const date = dayjs;
 
@@ -19,35 +22,15 @@ export const getDayName = (dateStr: string, locale: string) => {
   return date.toLocaleDateString(locale, { weekday: "long" });
 };
 
-export const addCurrentTime = (
-  list: ICurrentForecast[],
-  cur: ICurrentForecast
-) => {
-  // const current = date.unix(cur?.dt).utc(true).unix();
-  // const arr = [...list];
-  // const addIndex = list.findIndex((el, i) => {
-  //   return i < list.length - 1
-  //     ? current >= el.dt && current <= list[i + 1].dt
-  //     : current >= el.dt;
-  // });
-  // if (addIndex >= 0)
-  //   arr.splice(addIndex + 1, 0, {
-  //     ...cur,
-  //     dt: current,
-  //   });
-  return [...list, cur].sort((a, b) => a.dt - b.dt);
-  // return arr;
-};
-
 export const isSameUnixDate = (start: number, end: number) => {
-  const startDate = date.unix(start).utc(false);
-  const endDate = date.unix(end).utc(false);
+  const startDate = date.unix(start).utc(true);
+  const endDate = date.unix(end).utc(true);
 
   return startDate.isSame(endDate, "day");
 };
 
 export const isUnixToday = (start: number) => {
-  const startDate = date.unix(start).utc(false);
+  const startDate = date.unix(start).utc(true);
 
   return startDate.isToday();
 };

@@ -1,12 +1,12 @@
 "use client";
 import { CITIES_TOKEN } from "@/src/const/token";
-import { setCoordinate } from "@/src/lib/redux/features/app/appSlice";
-import { setCurrentLocation } from "@/src/lib/redux/features/location/locationSlice";
-import { useAppDispatch } from "@/src/lib/redux/store";
-import { Autocomplete, TextField } from "@mui/material";
+import useNavigate from "@/src/hook/useNavigate";
+import { Autocomplete, Box, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-
+import PlaceIcon from "@mui/icons-material/Place";
+import { callApi } from "@/src/api/callApi";
+import { CITIES_API } from "@/src/api/const";
 export interface ICityProps {
   name: string;
   latitude: number;
@@ -18,50 +18,74 @@ export interface ICityProps {
 
 export interface ICitiesSearch {
   onSearch?: (city: ICityProps) => void;
+  value?: string;
 }
 
-export default function CitiesSearch({ onSearch }: ICitiesSearch) {
-  const dispatch = useAppDispatch();
-  const [name, setName] = useState("");
-  const [cities, setCities] = useState([]);
-  const api = `https://api.api-ninjas.com/v1/city?name=${name}&limit=30`;
-  const { data: citiesData } = useSWR(
-    name ? [api, CITIES_TOKEN] : null,
-    ([url, token]) =>
-      fetch(url, {
-        headers: {
-          "X-Api-Key": token,
+export default function CitiesSearch(props: ICitiesSearch) {
+  const { value } = props;
+  const { onQueryChange, query } = useNavigate();
+  const [cities, setCities] = useState<ICityProps[]>([]);
+  const [inputValue, setInputValue] = useState(value);
+
+  const getCities = async (name: string) => {
+    if (name) {
+      setInputValue(name);
+
+      const citiesRes = await callApi(
+        CITIES_API,
+        {
+          name: name,
+          limit: 30,
         },
-      }).then((res) => res.json())
-  );
+        {
+          headers: {
+            "X-Api-Key": CITIES_TOKEN,
+          },
+        }
+      );
+      if (citiesRes) {
+        const formatCities = citiesRes.map((el: ICityProps) => ({
+          ...el,
+          label: el.name,
+        }));
+        setCities(formatCities);
+      }
+    }
+  };
 
   useEffect(() => {
-    if (citiesData)
-      setCities(
-        citiesData.map((el: ICityProps) => ({ ...el, label: el.name }))
-      );
-  }, [citiesData]);
+    setInputValue(value);
+  }, [value]);
 
   return (
-    <Autocomplete
-      options={cities}
-      onChange={(e, value: ICityProps | null) =>
-        value && dispatch(setCoordinate(value))
-      }
-      onInputChange={(e, value) => setName(value)}
-      sx={{
-        ".MuiOutlinedInput-notchedOutline": {
-          border: "none",
-        },
+    <Box display="flex" width="100%" alignItems={"center"}>
+      <PlaceIcon sx={{ color: "white" }} />
 
-        "input, label": { color: "white" },
-        borderRadius: 3,
-        width: "66%",
-      }}
-      renderInput={(params) => (
-        <TextField {...params} label="Search for cities" />
-      )}
-      popupIcon={false}
-    />
+      <Autocomplete
+        options={cities}
+        inputValue={inputValue}
+        onChange={(e, value) => {
+          if (value) {
+            onQueryChange({
+              ...query,
+              latitude: value.latitude,
+              longitude: value.longitude,
+            });
+          }
+        }}
+        onInputChange={(e, value) => getCities(value)}
+        sx={{
+          ".MuiOutlinedInput-notchedOutline": {
+            border: "none",
+          },
+
+          "input, label": { color: "white" },
+          borderRadius: 3,
+        }}
+        renderInput={(params) => <TextField {...params} />}
+        popupIcon={false}
+        fullWidth
+      />
+    </Box>
   );
 }

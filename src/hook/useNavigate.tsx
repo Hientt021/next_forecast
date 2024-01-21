@@ -18,10 +18,14 @@ const useNavigate = () => {
   }, [search]);
 
   const createSearchParams = (url: string, params: any) => {
-    const api = Object.keys(params).reduce((prev: string, cur: string) => {
-      if (params[cur]) return prev + "&" + cur + "=" + params[cur];
-      else return prev;
-    }, url + "?");
+    const api = Object.keys(params).reduce(
+      (prev: string, cur: string, index: number) => {
+        if (params[cur])
+          return prev + (index ? "&" : "") + cur + "=" + params[cur];
+        else return prev;
+      },
+      url + "?"
+    );
     return api;
   };
 

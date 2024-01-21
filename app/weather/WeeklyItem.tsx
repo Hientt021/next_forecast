@@ -25,7 +25,7 @@ export default function WeeklyItem(props: IWeeklyItem) {
       }}
       onClick={onClick}
     >
-      <Stack justifyContent={"center"} alignItems={"center"}>
+      <Stack justifyContent={"center"} alignItems={"center"} spacing={1}>
         <Typography fontWeight={600}>{data.date}</Typography>
         <ForecastIcon size={80} data={data} />
         <Typography fontWeight={600}>

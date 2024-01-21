@@ -20,6 +20,6 @@ export interface IDailyForecast {
   date: string;
   min: number;
   max: number;
-  list: ICurrentForecast[];
   icon: any;
+  list: ICurrentForecast[];
 }

@@ -5,6 +5,7 @@ import { UNIT } from "@/app/weather/type";
 const useUnit = () => {
   const { unit } = useAppSelector((state) => state.app);
   const formatUnit = (value?: number | string) => {
+    if (!value) return "";
     switch (unit) {
       case UNIT.C: {
         return Number(value) + "°C";

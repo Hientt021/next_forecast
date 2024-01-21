@@ -32,6 +32,8 @@ export default function TemperatureBar(props: ITemperatureBar) {
     [value, list]
   );
 
+  const defaultTemp = useMemo(() => (unit === UNIT.C ? 0 : 32), [unit]);
+
   return (
     <Stack gap={1}>
       <Box
@@ -53,12 +55,15 @@ export default function TemperatureBar(props: ITemperatureBar) {
       <Slider
         getAriaValueText={(value) => formatUnit(value)}
         step={tempList.length}
+        draggable={false}
         marks={tempList
           .filter((el) => el.show)
           .map((el) => ({ ...el, label: formatUnit(el.value) }))}
         valueLabelDisplay="auto"
         size="medium"
-        value={value}
+        value={
+          value > defaultTemp ? [defaultTemp, value] : [value, defaultTemp]
+        }
         min={tempList[tempList.length - 1].value}
         max={tempList[0].value}
         sx={{

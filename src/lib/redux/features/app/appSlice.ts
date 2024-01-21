@@ -3,23 +3,26 @@ import { ICurrentForecast } from "@/app/weather/type";
 import { createSlice } from "@reduxjs/toolkit";
 
 interface IAppSlice {
-  forecast: {
-    current?: ICurrentForecast;
-    list: ICurrentForecast[];
-  };
   unit: string;
-  coordinate: ICoordinate;
+  city: string;
+  device: {
+    name: string;
+    isMobile: boolean;
+    isIpad: boolean;
+    isDesktop: boolean;
+    width: number;
+  };
 }
 
 const initialState: IAppSlice = {
-  forecast: {
-    current: undefined,
-    list: [],
-  },
   unit: "metric",
-  coordinate: {
-    latitude: "",
-    longitude: "",
+  city: "",
+  device: {
+    name: "",
+    isMobile: false,
+    isIpad: false,
+    isDesktop: false,
+    width: 0,
   },
 };
 
@@ -27,21 +30,17 @@ export const appSlice = createSlice({
   name: "App",
   initialState,
   reducers: {
-    setCoordinate: (state, action) => {
-      state.coordinate = action.payload;
-    },
     setUnit: (state, action) => {
       state.unit = action.payload;
     },
-    setForecast: (state, action) => {
-      state.forecast.current = action.payload;
+    setDevice: (state, action) => {
+      state.device = action.payload;
     },
-    setWeeklyList: (state, action) => {
-      state.forecast.list = action.payload;
+    setCity: (state, action) => {
+      state.city = action.payload;
     },
   },
 });
 
-export const { setCoordinate, setUnit, setForecast, setWeeklyList } =
-  appSlice.actions;
+export const { setUnit, setDevice, setCity } = appSlice.actions;
 export default appSlice.reducer;

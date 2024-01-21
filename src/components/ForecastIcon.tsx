@@ -4,11 +4,11 @@ import Image from "next/image";
 
 interface IForecastIcon {
   size: number;
-  data: ICurrentForecast;
+  data?: ICurrentForecast;
 }
 const ForecastIcon = (props: IForecastIcon) => {
   const { data, size } = props;
-  return data && Object.keys(data).length ? (
+  return data?.icon ? (
     <Image
       width={size}
       height={size}

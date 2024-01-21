@@ -86,6 +86,7 @@ const SemiCircle = (props: ISemiCircle) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, 0)",
+            wordWrap: "normal",
           }}
         >
           {label}
