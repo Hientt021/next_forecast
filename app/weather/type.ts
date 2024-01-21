@@ -18,8 +18,8 @@ export type IUnit = "metric" | "imperial";
 
 export interface IDailyForecast {
   date: string;
-  min: number;
-  max: number;
+  min: string;
+  max: string;
   icon: any;
   list: ICurrentForecast[];
 }

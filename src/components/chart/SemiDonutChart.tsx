@@ -1,6 +1,6 @@
 "use client";
 import { Box, Typography, styled } from "@mui/material";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import NavigationIcon from "@mui/icons-material/Navigation";
 import { UV_LIST, getDescription } from "@/app/weather/AirConditions";
 import ApexChart from "./ApexChart";
@@ -21,9 +21,9 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
   const { value, max, label, list } = props;
   const activeIndex = useMemo(() => {
     const index = list.findIndex((el) => el.min < value && el.max >= value);
-    console.log(index);
     return index;
   }, [value, max, list]);
+  const ref = useRef();
   const options = {
     plotOptions: {
       pie: {
@@ -67,9 +67,9 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           position: "absolute",
           bottom: 0,
           left: "50%",
-          transform: "translate(-50%, 0%)",
-          rotate: `${-90 + (activeIndex / list.length) * 240}deg`,
+          rotate: `z ${-90 + (180 / max) * list[activeIndex].max}deg`,
         },
+        fontSize: "1rem",
       }}
     >
       <Box
@@ -78,6 +78,7 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           overflow: "hidden",
           position: "relative",
         }}
+        ref={ref}
       >
         <ApexChart options={options as any} series={series} type="donut" />
       </Box>

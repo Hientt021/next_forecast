@@ -8,9 +8,11 @@ import { useEffect, useMemo, useState } from "react";
 import TodayForecast from "./TodayForecast";
 import WeeklyItem from "./WeeklyItem";
 import { ICurrentForecast, IDailyForecast } from "./type";
+import useUnit from "@/src/hook/useUnit";
 
 interface IWeeklyForecast {
   weeklyData?: ICurrentForecast[];
+  loading?: boolean;
 }
 
 export enum VIEW_MODE {
@@ -18,23 +20,26 @@ export enum VIEW_MODE {
   CHART = "chart",
 }
 export default function WeeklyForecast(props: IWeeklyForecast) {
-  const { weeklyData = [] } = props;
+  const { weeklyData = [], loading = false } = props;
   const { onQueryChange, query } = useNavigate();
+  const { formatUnit } = useUnit();
+
   const [active, setActive] = useState(0);
   const [weeklyList, setWeeklyList] = useState<IDailyForecast[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  const formatForecastList = (data: any) => {
-    setLoading(true);
+  const getDayList = async () => {
     const dayArr: Dayjs[] = [];
     let i = 0;
     while (dayArr.length < 6) {
       dayArr.push(date().add(i, "day").utc(true).startOf("day"));
       i++;
     }
+    return dayArr;
+  };
 
+  const formatDayList = async (dayArr: Dayjs[], data: ICurrentForecast[]) => {
     const formatArr: IDailyForecast[] = dayArr.map((el) => {
-      const list: ICurrentForecast[] = data.filter((item: any) => {
+      const list = data.filter((item: any) => {
         return isSameUnixDate(item.dt, el.unix());
       });
 
@@ -44,14 +49,24 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
 
       return {
         date: el.isToday() ? "Today" : getDayName(el.format(), "en-US"),
-        min: minTemp,
-        max: maxTemp,
+        min: formatUnit(minTemp),
+        max: formatUnit(maxTemp),
         icon: list?.[0]?.icon,
         list: list,
       };
     });
-    setLoading(false);
-    setWeeklyList(formatArr);
+    return formatArr;
+  };
+
+  const formatForecastList = async (data: any) => {
+    try {
+      const dayList = await getDayList();
+      const formattedList = await formatDayList(dayList, data);
+      setWeeklyList(formattedList);
+    } catch (e) {
+      console.log(e);
+    } finally {
+    }
   };
 
   useEffect(() => {

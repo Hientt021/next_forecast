@@ -134,7 +134,7 @@ export default function WeatherPage() {
         data={currentData}
         city={city}
       />
-      <WeeklyForecast weeklyData={weeklyData} />
+      <WeeklyForecast weeklyData={weeklyData} loading={!currentData} />
     </StyledWrapper>
   );
 }
