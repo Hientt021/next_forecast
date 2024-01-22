@@ -12,6 +12,6 @@ export const callApi = async (
   if (res.ok) {
     return data;
   } else {
-    console.log(res.statusText);
+    return res;
   }
 };

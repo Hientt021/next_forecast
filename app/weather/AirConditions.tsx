@@ -11,6 +11,9 @@ import ThermostatIcon from "@mui/icons-material/Thermostat";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { ICurrentForecast } from "./type";
+import { useAppSelector } from "@/src/lib/redux/store";
+import useUnit from "@/src/hook/useUnit";
+import React from "react";
 interface IAirConditions {
   currentData: ICurrentForecast;
 }
@@ -202,82 +205,154 @@ export const getDescription = (value: number, list: IProgressList[]) => {
 
 export default function AirConditions(props: IAirConditions) {
   const { currentData } = props;
-
+  const { isMobile, isDesktop } = useAppSelector((state) => state.app.device);
+  const { formatUnit } = useUnit();
   const contents = [
     {
       label: "Humidity",
-      key: "1",
+      key: "humidity",
       icon: <WaterDropIcon />,
-      render: (value: any) => (
-        <Stack gap={1}>
-          <Box
-            display={"flex"}
-            alignItems={"flex-end"}
-            gap={1}
-            justifyContent={"center"}
-          >
-            <Typography variant="h6" fontWeight={600}>
-              {value?.humidity + "%"}
-            </Typography>
-            <Typography
-              fontWeight={500}
-              sx={{ color: "GrayText", fontSize: "0.875rem" }}
+      render: (value: any) =>
+        !isDesktop ? (
+          value.humidity + "%"
+        ) : (
+          <Stack gap={1}>
+            <Box
+              display={"flex"}
+              alignItems={"flex-end"}
+              gap={1}
+              justifyContent={"center"}
             >
-              {getDescription(value?.humidity, HUMIDITY_LIST)?.label}
-            </Typography>
-          </Box>
+              <Typography variant="h6" fontWeight={600}>
+                {value?.humidity + "%"}
+              </Typography>
+              <Typography
+                fontWeight={500}
+                sx={{ color: "GrayText", fontSize: "0.875rem" }}
+              >
+                {getDescription(value?.humidity, HUMIDITY_LIST)?.label}
+              </Typography>
+            </Box>
 
-          <ProgressStep steps={HUMIDITY_LIST} value={value?.humidity} />
-        </Stack>
-      ),
+            <ProgressStep steps={HUMIDITY_LIST} value={value?.humidity} />
+          </Stack>
+        ),
     },
     {
       label: "Wind",
-      key: "2",
+      key: "wind",
+      unit: "km/h",
       icon: <AirIcon />,
-      render: (value: any) => (
-        <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
-          <SemiCircle
-            value={value?.wind}
-            max={40}
-            label={value?.wind + " km/h"}
-          />
-        </Box>
-      ),
+      render: (value: any) =>
+        !isDesktop ? (
+          value.wind + "km/h"
+        ) : (
+          <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
+            <SemiCircle
+              value={value?.wind}
+              max={40}
+              label={value?.wind + " km/h"}
+            />
+          </Box>
+        ),
     },
     {
       label: "Feels like",
-      key: "3",
+      key: "feels_like",
+      unit: "°C",
       icon: <ThermostatIcon />,
-      render: (value: any) => (
-        <TemperatureBar list={OUTDOOR_TEMPERATURE} value={value?.feels_like} />
-      ),
+      render: (value: any) =>
+        !isDesktop ? (
+          formatUnit(value?.feels_like)
+        ) : (
+          <TemperatureBar
+            list={OUTDOOR_TEMPERATURE}
+            value={value?.feels_like}
+          />
+        ),
     },
     {
       label: "UV Index",
-      key: "4",
+      key: "uvIndex",
       show: !!currentData?.uvIndex,
       icon: <Brightness7Icon />,
-      render: (value: any) => (
-        <SemiDonutChart list={UV_LIST} max={13} value={value?.uvIndex!!} />
-      ),
+      render: (value: any) =>
+        !isDesktop ? (
+          value.uvIndex
+        ) : (
+          <SemiDonutChart list={UV_LIST} max={13} value={value?.uvIndex!!} />
+        ),
     },
     {
       label: "Air Quality",
-      key: "5",
+      key: "airQuality",
       show: !!currentData?.airQuality,
       icon: <MasksIcon />,
-      render: (value: any) => (
-        <SemiDonutChart
-          list={AIR_POLLUTION_LIST}
-          max={5}
-          value={value?.airQuality!!}
-        />
-      ),
+      render: (value: any) =>
+        !isDesktop ? (
+          value.airQuality
+        ) : (
+          <SemiDonutChart
+            list={AIR_POLLUTION_LIST}
+            max={5}
+            value={value?.airQuality!!}
+          />
+        ),
     },
   ];
 
-  return (
+  const renderIcon = (icon: React.ReactNode) => (
+    <Box
+      className="icon"
+      p={"4px"}
+      sx={{
+        background: !isDesktop ? "transparent" : "#5C9CE5",
+        borderRadius: "50%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        svg: {
+          fontSize: !isDesktop ? "2rem" : "1.25rem",
+          path: { fill: !isDesktop ? "#5C9CE5" : "white " },
+        },
+      }}
+    >
+      {icon}
+    </Box>
+  );
+
+  return !isDesktop ? (
+    <CardComponent
+      p={2}
+      sx={{
+        ".step-label": {
+          color: "GrayText",
+          fontSize: "0.75rem",
+        },
+        ".apexcharts-pie-label": {
+          fontSize: "0.75rem",
+          color: "GrayText",
+        },
+      }}
+    >
+      <Grid container spacing={2}>
+        {contents.map(
+          (el) =>
+            (el.show || el.show === undefined) && (
+              <Grid key={el.key} item xs={6} display="flex">
+                {renderIcon(el.icon)}
+                <Stack>
+                  <Typography className="step-label">{el.label}</Typography>
+                  <Typography fontWeight={600} fontSize={"1.125rem"}>
+                    {el.render(currentData)}
+                  </Typography>
+                </Stack>
+              </Grid>
+            )
+        )}
+      </Grid>
+    </CardComponent>
+  ) : (
     <Grid
       spacing={3}
       container
@@ -293,50 +368,35 @@ export default function AirConditions(props: IAirConditions) {
         },
       }}
     >
-      {currentData &&
-        contents.map(
-          (el) =>
-            (el.show || el.show === undefined) && (
-              <Grid
-                item
-                xs={4}
-                key={el.key}
-                display="flex"
-                gap={2}
-                sx={{
-                  ".icon": {
-                    svg: { fontSize: "1.25rem", path: { fill: "white " } },
-                  },
-                }}
-              >
-                <CardComponent p={3} width={"100%"}>
-                  <Box
-                    display="flex"
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    width={"100%"}
-                  >
-                    <Typography fontWeight={600}>{el.label}</Typography>
-                    <Box
-                      className="icon"
-                      p={"4px"}
-                      sx={{
-                        background: "#5C9CE5",
-                        borderRadius: "50%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      {el.icon}
-                    </Box>
-                  </Box>
+      {contents.map(
+        (el) =>
+          (el.show || el.show === undefined) && (
+            <Grid
+              item
+              xs={12}
+              lg={6}
+              xl={4}
+              key={el.key}
+              display="flex"
+              gap={2}
+              sx={{}}
+            >
+              <CardComponent loading={!currentData} p={3} width={"100%"}>
+                <Box
+                  display="flex"
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  width={"100%"}
+                >
+                  <Typography fontWeight={600}>{el.label}</Typography>
+                  {renderIcon(el.icon)}
+                </Box>
 
-                  {el.render(currentData)}
-                </CardComponent>
-              </Grid>
-            )
-        )}
+                {el.render(currentData)}
+              </CardComponent>
+            </Grid>
+          )
+      )}
     </Grid>
   );
 }

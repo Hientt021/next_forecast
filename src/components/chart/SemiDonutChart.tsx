@@ -29,7 +29,7 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
       pie: {
         startAngle: -90,
         endAngle: 90,
-        offsetY: 0,
+        offsetY: -5,
         dataLabels: {
           offset: 0,
         },
@@ -74,13 +74,18 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
     >
       <Box
         sx={{
-          height: 130,
+          maxHeight: 120,
           overflow: "hidden",
           position: "relative",
         }}
         ref={ref}
       >
-        <ApexChart options={options as any} series={series} type="donut" />
+        <ApexChart
+          height={250}
+          options={options as any}
+          series={series}
+          type="donut"
+        />
       </Box>
 
       <Box

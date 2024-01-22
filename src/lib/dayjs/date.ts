@@ -5,6 +5,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isBetween from "dayjs/plugin/isBetween";
 import IsoWeek from "dayjs/plugin/IsoWeek";
+import Duration from "dayjs/plugin/Duration";
 
 import { ICurrentForecast } from "@/app/weather/type";
 
@@ -14,6 +15,7 @@ dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isBetween);
 dayjs.extend(IsoWeek);
+dayjs.extend(Duration);
 
 export const date = dayjs;
 

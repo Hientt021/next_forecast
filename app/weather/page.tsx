@@ -6,19 +6,22 @@ import {
   UVI_API,
   WEATHER_API,
 } from "@/src/api/const";
-import Loader from "@/src/components/Loader";
 import { WEATHER_TOKEN } from "@/src/const/token";
 import useNavigate from "@/src/hook/useNavigate";
 import { date } from "@/src/lib/dayjs/date";
-import { useAppSelector } from "@/src/lib/redux/store";
+import {
+  setAllowAccessLocation,
+  setCity,
+  setMessages,
+} from "@/src/lib/redux/features/app/appSlice";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
 import { formatForecastData } from "@/src/utils/forecast";
-import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import ForecastSider from "./ForecastSider";
-import { ICurrentForecast } from "./type";
-import Dimension from "@/src/hook/useDevice";
 import WeeklyForecast from "./WeeklyForecast";
 import { StyledWrapper } from "./styled";
+import { ICurrentForecast } from "./type";
+import MessageContainer from "@/src/components/MessageContainer";
 export interface ICoordinate {
   name?: string;
   longitude: string;
@@ -26,11 +29,15 @@ export interface ICoordinate {
 }
 
 export default function WeatherPage() {
-  const { unit, device } = useAppSelector((state) => state.app);
+  const { unit, device, isAllowAccessLocation } = useAppSelector(
+    (state) => state.app
+  );
+  const { isMobile, isIpad, isDesktop } = device;
   const { query, onQueryChange } = useNavigate();
-  const [coordinate, setCoordinate] = useState({ latitude: "", longitude: "" });
+  const dispatch = useAppDispatch();
   const [weeklyData, setWeeklyData] = useState<ICurrentForecast[]>([]);
-  const [city, setCity] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const init = async (userCoordinate: ICoordinate, currentUnit: string) => {
     const currentForecast = await getCurrentForecast(
       userCoordinate,
@@ -43,6 +50,7 @@ export default function WeatherPage() {
         ...weeklyForecast,
       ].sort((a, b) => a.dt - b.dt);
       setWeeklyData(formatWeekly);
+      setLoading(false);
     }
   };
 
@@ -76,7 +84,7 @@ export default function WeatherPage() {
         airQuality: airQuality.list[0].main.aqi,
         uvIndex: uvIndex.value,
       });
-
+      dispatch(setCity(currentForecast.name));
       return formatCurrent;
     }
   };
@@ -98,25 +106,38 @@ export default function WeatherPage() {
         .filter((el: any) =>
           date.unix(el.dt).isSameOrAfter(date().startOf("day"), "day")
         );
-      setCity(weeklyForecast.city.name);
 
       return sortedWeekly;
     }
   };
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (location) => {
-        const latitude = location.coords.latitude.toString();
-        const longitude = location.coords.longitude.toString();
-        if (latitude && longitude)
-          onQueryChange({ ...query, latitude, longitude });
-      });
-    }
-  }, []);
+  const onAllowedAccessLocation = async (location: GeolocationPosition) => {
+    dispatch(setAllowAccessLocation(true));
+    const latitude = location.coords.latitude.toString();
+    const longitude = location.coords.longitude.toString();
+    if (latitude && longitude) onQueryChange({ ...query, latitude, longitude });
+  };
+
+  const onDeniedAccessLocation = async (error: GeolocationPositionError) => {
+    dispatch(setAllowAccessLocation(false));
+    dispatch(
+      setMessages({
+        content: "Please choose a city",
+        type: "info",
+        autoClose: false,
+      })
+    );
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (query?.latitude && query?.longitude) init(query, unit);
+    else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        onAllowedAccessLocation,
+        onDeniedAccessLocation
+      );
+    }
   }, [query?.latitude, query?.longitude, unit]);
 
   const currentData = useMemo(() => {
@@ -125,16 +146,14 @@ export default function WeatherPage() {
 
   return (
     <StyledWrapper
-      isMobile={device.isMobile}
-      loading={!coordinate}
+      isMobile={isMobile}
+      isIpad={isIpad}
+      loading={loading}
       className="main"
+      p={isDesktop ? 0 : 2}
     >
-      <ForecastSider
-        setCoordinate={setCoordinate}
-        data={currentData}
-        city={city}
-      />
-      <WeeklyForecast weeklyData={weeklyData} loading={!currentData} />
+      <ForecastSider data={currentData} />
+      <WeeklyForecast weeklyData={weeklyData} />
     </StyledWrapper>
   );
 }

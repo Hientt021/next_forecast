@@ -12,28 +12,41 @@ import { ICurrentForecast } from "./type";
 import { ICoordinate } from "./page";
 import { StyledWrapper } from "./styled";
 import { useMemo } from "react";
+import useNavigate from "@/src/hook/useNavigate";
 
 interface IForecastSider {
   data?: ICurrentForecast;
-  city: string;
-  setCoordinate: (value: ICoordinate) => void;
 }
 
 export default function ForecastSider(props: IForecastSider) {
-  const { data, city } = props;
-  const { isMobile } = useAppSelector((state) => state.app.device);
+  const { data } = props;
+  const { isMobile, isIpad, isDesktop } = useAppSelector(
+    (state) => state.app.device
+  );
+  const { isAllowAccessLocation } = useAppSelector((state) => state.app);
+  const { query } = useNavigate();
   const { formatUnit } = useUnit();
+
+  const dayTime = useMemo(
+    () => (query?.dt ? date.unix(query?.dt) : date()).format("MMM DD, YYYY"),
+    [query?.dt]
+  );
+  const hourTime = useMemo(
+    () => (query?.dt ? date.unix(query?.dt) : date()).format("HH:mm"),
+    [query?.dt]
+  );
+
   return (
     <StyledWrapper
       isMobile={isMobile}
-      loading={!data}
+      loading={!data && isAllowAccessLocation}
       sx={{
         color: "white",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        width: isMobile ? "100%" : "20%",
-        p: 5,
+        minWidth: !isDesktop ? "100%" : "25%",
+        p: !isDesktop ? 2 : 5,
         position: "relative",
       }}
     >
@@ -43,8 +56,8 @@ export default function ForecastSider(props: IForecastSider) {
         alignItems={"center"}
         width={"100%"}
       >
-        <CitiesSearch value={city} />
-        <DegreeSwitch />
+        <CitiesSearch />
+        {query?.latitude && query?.longitude && <DegreeSwitch />}
       </Box>
 
       <Box
@@ -53,43 +66,49 @@ export default function ForecastSider(props: IForecastSider) {
         width={"100%"}
         pr={1}
       >
-        <Typography fontWeight={600}>
-          {date().format("MMM DD, YYYY")}
-        </Typography>
-        <Typography fontWeight={600}>{date().format("HH:mm")}</Typography>
+        <Typography fontWeight={600}>{dayTime}</Typography>
+        <Typography fontWeight={600}>{hourTime}</Typography>
       </Box>
 
-      <Stack spacing={5} justifyContent={"center"} alignItems={"center"} mt={3}>
-        <Typography my={3} variant="h2" fontWeight={600}>
-          {formatUnit(data?.temp)}
-        </Typography>
-        <Typography
-          mt={2}
-          fontWeight={600}
-          sx={{ textTransform: "capitalize" }}
-        >
-          {data?.description}
-        </Typography>
-        <ForecastIcon size={100} data={data!!} />
-      </Stack>
       <Box
-        sx={{
-          position: "absolute",
-          bottom: 0,
-          fontSize: "1.25rem",
-          width: "100%",
-          height: 400,
-        }}
+        display="flex"
+        flexDirection={isIpad ? "row" : "column"}
+        gap={isDesktop ? 5 : 2}
+        justifyContent={"center"}
+        alignItems={"center"}
+        mt={3}
       >
-        <Image
-          alt=""
-          src={require("@/public/images/backgrounds/city.svg")}
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        />
+        <Stack gap={2} alignItems={"center"}>
+          <Typography variant="h2" fontWeight={600}>
+            {formatUnit(data?.temp)}
+          </Typography>
+          <Typography fontWeight={600} sx={{ textTransform: "capitalize" }}>
+            {data?.description}
+          </Typography>
+        </Stack>
+
+        <ForecastIcon size={100} data={data!!} />
       </Box>
+      {isDesktop && (
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 0,
+            fontSize: "1.25rem",
+            width: "100%",
+            height: 400,
+          }}
+        >
+          <Image
+            alt=""
+            src={require("@/public/images/backgrounds/city.svg")}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
+        </Box>
+      )}
     </StyledWrapper>
   );
 }

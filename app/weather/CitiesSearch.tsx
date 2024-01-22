@@ -7,6 +7,8 @@ import useSWR from "swr";
 import PlaceIcon from "@mui/icons-material/Place";
 import { callApi } from "@/src/api/callApi";
 import { CITIES_API } from "@/src/api/const";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
+import { setCity } from "@/src/lib/redux/features/app/appSlice";
 export interface ICityProps {
   name: string;
   latitude: number;
@@ -18,14 +20,14 @@ export interface ICityProps {
 
 export interface ICitiesSearch {
   onSearch?: (city: ICityProps) => void;
-  value?: string;
 }
 
 export default function CitiesSearch(props: ICitiesSearch) {
-  const { value } = props;
   const { onQueryChange, query } = useNavigate();
+  const { city } = useAppSelector((state) => state.app);
+  const dispatch = useAppDispatch();
   const [cities, setCities] = useState<ICityProps[]>([]);
-  const [inputValue, setInputValue] = useState(value);
+  const [inputValue, setInputValue] = useState(city);
 
   const getCities = async (name: string) => {
     if (name) {
@@ -53,10 +55,6 @@ export default function CitiesSearch(props: ICitiesSearch) {
     }
   };
 
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-
   return (
     <Box display="flex" width="100%" alignItems={"center"}>
       <PlaceIcon sx={{ color: "white" }} />
@@ -71,6 +69,7 @@ export default function CitiesSearch(props: ICitiesSearch) {
               latitude: value.latitude,
               longitude: value.longitude,
             });
+            dispatch(setCity(value.name));
           }
         }}
         onInputChange={(e, value) => getCities(value)}

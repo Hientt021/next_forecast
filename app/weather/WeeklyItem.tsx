@@ -1,7 +1,8 @@
 import CardComponent from "@/src/components/CardComponent";
 import ForecastIcon from "@/src/components/ForecastIcon";
 import useNavigate from "@/src/hook/useNavigate";
-import { Stack, Typography } from "@mui/material";
+import { useAppSelector } from "@/src/lib/redux/store";
+import { Box, Stack, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 interface IWeeklyItem {
@@ -11,6 +12,15 @@ interface IWeeklyItem {
 }
 export default function WeeklyItem(props: IWeeklyItem) {
   const { data, active = false, onClick } = props;
+  const { isMobile } = useAppSelector((state) => state.app.device);
+
+  const isLoading = useMemo(() => {
+    let result = false;
+    Object.keys(data).forEach((key) => {
+      if (!data[key]) result = true;
+    });
+    return result;
+  }, [data]);
 
   return (
     <CardComponent
@@ -22,12 +32,19 @@ export default function WeeklyItem(props: IWeeklyItem) {
         cursor: "pointer",
       }}
       onClick={onClick}
+      loading={isLoading}
     >
-      <Stack justifyContent={"center"} alignItems={"center"} spacing={1}>
+      <Box
+        display={"flex"}
+        flexDirection={isMobile ? "row" : "column"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        gap={1}
+      >
         <Typography fontWeight={600}>{data.date}</Typography>
         <ForecastIcon size={80} data={data} />
         <Typography fontWeight={600}>{data.min + " / " + data.max}</Typography>
-      </Stack>
+      </Box>
     </CardComponent>
   );
 }

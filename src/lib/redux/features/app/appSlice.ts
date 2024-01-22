@@ -1,7 +1,13 @@
 import { ICoordinate } from "@/app/weather/page";
 import { ICurrentForecast } from "@/app/weather/type";
+import { IMessageType } from "@/src/components/MessageContainer";
 import { createSlice } from "@reduxjs/toolkit";
 
+interface IMessage {
+  type: IMessageType;
+  content: string;
+  autoClose?: boolean;
+}
 interface IAppSlice {
   unit: string;
   city: string;
@@ -12,6 +18,8 @@ interface IAppSlice {
     isDesktop: boolean;
     width: number;
   };
+  messages: IMessage[];
+  isAllowAccessLocation: boolean;
 }
 
 const initialState: IAppSlice = {
@@ -24,6 +32,8 @@ const initialState: IAppSlice = {
     isDesktop: false,
     width: 0,
   },
+  messages: [],
+  isAllowAccessLocation: false,
 };
 
 export const appSlice = createSlice({
@@ -39,8 +49,23 @@ export const appSlice = createSlice({
     setCity: (state, action) => {
       state.city = action.payload;
     },
+    setMessages: (state, action) => {
+      state.messages = [
+        ...state.messages,
+        { ...action.payload, autoClose: action.payload || true },
+      ];
+    },
+    setAllowAccessLocation: (state, action) => {
+      state.isAllowAccessLocation = action.payload;
+    },
   },
 });
 
-export const { setUnit, setDevice, setCity } = appSlice.actions;
+export const {
+  setUnit,
+  setDevice,
+  setCity,
+  setMessages,
+  setAllowAccessLocation,
+} = appSlice.actions;
 export default appSlice.reducer;

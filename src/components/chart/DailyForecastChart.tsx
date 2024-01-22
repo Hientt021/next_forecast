@@ -13,7 +13,7 @@ interface IDailyForecastChart {
 
 export default function DailyForecastChart(props: IDailyForecastChart) {
   const { data, active = 0, onMarkerClick } = props;
-
+  const currentData = data.find((el) => el.airQuality && el.uvIndex);
   const options = {
     dataLabels: {
       enabled: true,
@@ -52,7 +52,9 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       tickAmount: data.length,
       labels: {
         formatter: (value: number) => {
-          return date.unix(value).format("HH:mm");
+          return currentData?.dt === value
+            ? "Now"
+            : date.unix(value).format("HH:mm");
         },
         style: {
           fontSize: "1rem",
@@ -122,7 +124,7 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
         ".apexcharts-gridline": {
           display: "none",
         },
-        [`.apexcharts-gridline:nth-child(${active + 1})`]: {
+        [`.apexcharts-gridline:nth-of-type(${active + 1})`]: {
           display: "inline",
         },
       }}

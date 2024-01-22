@@ -18,23 +18,27 @@ const BREAK_POINTS = [
 ];
 const Dimension = () => {
   const dispatch = useAppDispatch();
-  const onResize = () => {
-    const width = window.innerWidth;
-    const current = BREAK_POINTS.find((el) => width >= el.breakPoint);
 
-    dispatch(
-      setDevice({
-        name: current?.device,
-        width: width,
-        isMobile: current?.device === "Mobile",
-        isIpad: current?.device === "Ipad",
-        isDesktop: current?.device === "Desktop",
-      })
-    );
-  };
   useEffect(() => {
+    const onResize = () => {
+      const width = window.innerWidth;
+      const current = BREAK_POINTS.find((el) => width >= el.breakPoint);
+      dispatch(
+        setDevice({
+          name: current?.device,
+          width: width,
+          isMobile: current?.device === "Mobile",
+          isIpad: current?.device === "Ipad",
+          isDesktop: current?.device === "Desktop",
+        })
+      );
+    };
+    if (typeof window !== "undefined") onResize();
+
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   return null;

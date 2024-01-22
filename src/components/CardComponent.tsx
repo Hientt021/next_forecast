@@ -21,7 +21,12 @@ export default function CardComponent(props: ICardComponent) {
     </Box>
   ) : (
     <Skeleton
-      sx={{ minHeight: 200, background: "#E3F1FF", borderRadius: 6 }}
+      sx={{
+        width: "100%",
+        minHeight: 200,
+        background: "#fff",
+        borderRadius: 6,
+      }}
       variant="rounded"
     />
   );
