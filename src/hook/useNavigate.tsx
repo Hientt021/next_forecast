@@ -9,11 +9,14 @@ const useNavigate = () => {
   const search = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+
   const query = useMemo(() => {
     let result: any = {};
     search.forEach((value, key) => {
+      console.log(value, key);
       result = { ...result, [key]: value };
     });
+
     return result;
   }, [search]);
 

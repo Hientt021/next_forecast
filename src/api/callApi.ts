@@ -7,7 +7,7 @@ export const callApi = async (
     if (params[cur]) return prev + "&" + cur + "=" + params[cur];
     else return prev;
   }, url + "?");
-  const res = await fetch(api, options);
+  const res = await fetch(api, { ...options, next: { revalidate: 60 } });
   const data = await res.json();
   if (res.ok) {
     return data;

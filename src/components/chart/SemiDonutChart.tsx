@@ -55,6 +55,16 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
   };
 
   const series = list.map((el) => el.max - el.min);
+  const currentDeg = useMemo(() => {
+    const selected = list[activeIndex];
+    if (selected) {
+      const { min, max: selectedMax } = selected;
+      const pointDeg = 180 / max;
+      const currentPoint = (selectedMax + min) / 2;
+      return -90 + pointDeg * currentPoint;
+    }
+  }, [activeIndex, list, max]);
+
   return (
     <Box
       sx={{
@@ -67,7 +77,7 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           position: "absolute",
           bottom: 0,
           left: "50%",
-          rotate: `z ${-90 + (180 / max) * list[activeIndex].max}deg`,
+          rotate: `z ${currentDeg}deg`,
         },
         fontSize: "1rem",
       }}

@@ -20,9 +20,9 @@ import ForecastSider from "./ForecastSider";
 import WeeklyForecast from "./WeeklyForecast";
 import { StyledWrapper } from "./styled";
 import { ICurrentForecast } from "./type";
-import MessageContainer from "@/src/components/MessageContainer";
+import MessageContainer from "@/src/hook/useAlert";
 import { useSnackbar } from "notistack";
-import useAlert from "@/src/components/MessageContainer";
+import useAlert from "@/src/hook/useAlert";
 export interface ICoordinate {
   name?: string;
   longitude: string;
@@ -36,10 +36,10 @@ export default function WeatherPage() {
   const { isMobile, isIpad, isDesktop } = device;
   const { query, onQueryChange } = useNavigate();
   const { showAlert } = useAlert();
-
   const dispatch = useAppDispatch();
   const [weeklyData, setWeeklyData] = useState<ICurrentForecast[]>([]);
   const [loading, setLoading] = useState(true);
+  const [firstRender, setFirstRender] = useState(false);
 
   const init = async (userCoordinate: ICoordinate, currentUnit: string) => {
     const currentForecast = await getCurrentForecast(

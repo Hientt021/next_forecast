@@ -10,7 +10,10 @@ export default function useAlert() {
   const { enqueueSnackbar } = useSnackbar();
 
   const showAlert = (content: string, type?: IMessageType) =>
-    enqueueSnackbar(content, { variant: type || "default" });
+    enqueueSnackbar(content, {
+      variant: type || "default",
+      anchorOrigin: { vertical: "top", horizontal: "center" },
+    });
 
   return { showAlert };
 }

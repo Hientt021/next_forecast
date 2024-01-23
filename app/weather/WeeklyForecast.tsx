@@ -119,7 +119,8 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
     formatForecastList(weeklyData);
   }, [weeklyData]);
 
-  if (!(query?.latitude && query?.longitude)) return <EmptyLocation />;
+  if (!(query?.latitude && query?.longitude))
+    return <EmptyLocation className={isDesktop ? "wrapper" : ""} />;
 
   return (
     <StyledWrapper

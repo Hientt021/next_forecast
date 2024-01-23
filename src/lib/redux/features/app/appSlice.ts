@@ -1,6 +1,6 @@
 import { ICoordinate } from "@/app/weather/page";
 import { ICurrentForecast } from "@/app/weather/type";
-import { IMessageType } from "@/src/components/MessageContainer";
+import { IMessageType } from "@/src/hook/useAlert";
 import { createSlice } from "@reduxjs/toolkit";
 
 interface IMessage {
