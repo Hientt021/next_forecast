@@ -13,7 +13,6 @@ const useNavigate = () => {
   const query = useMemo(() => {
     let result: any = {};
     search.forEach((value, key) => {
-      console.log(value, key);
       result = { ...result, [key]: value };
     });
 
