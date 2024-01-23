@@ -15,7 +15,6 @@ import {
   ArrowRightAltOutlined,
   ArrowRightRounded,
 } from "@mui/icons-material";
-import { setMessages } from "@/src/lib/redux/features/app/appSlice";
 
 interface ITodayForecast {
   currentList: ICurrentForecast[];
