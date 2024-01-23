@@ -23,6 +23,7 @@ export enum VIEW_MODE {
 export default function WeeklyForecast(props: IWeeklyForecast) {
   const { weeklyData = [] } = props;
   const [loading, setLoading] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const { onQueryChange, query } = useNavigate();
   const { formatUnit } = useUnit();
   const { isMobile, isIpad, isDesktop } = useAppSelector(
@@ -32,8 +33,6 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
 
   const [active, setActive] = useState(0);
   const [weeklyList, setWeeklyList] = useState<IDailyForecast[]>([]);
-
-  if (!(query?.latitude && query?.longitude)) return <EmptyLocation />;
 
   const getDayList = async (data: any) => {
     const dayArr: Dayjs[] = [];
@@ -90,9 +89,8 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
     <Grid container>
       {weeklyList.map((el: any, i: number) => {
         return (
-          <Grid item xs={12}>
+          <Grid key={i} item xs={12}>
             <WeeklyItem
-              key={i}
               active={active === i}
               onClick={() => {
                 isMobile && setOpenDrawer(false);
@@ -121,7 +119,8 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
     formatForecastList(weeklyData);
   }, [weeklyData]);
 
-  const [openDrawer, setOpenDrawer] = useState(false);
+  if (!(query?.latitude && query?.longitude)) return <EmptyLocation />;
+
   return (
     <StyledWrapper
       isMobile={isMobile}
