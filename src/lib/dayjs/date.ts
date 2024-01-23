@@ -7,8 +7,6 @@ import isBetween from "dayjs/plugin/isBetween";
 import IsoWeek from "dayjs/plugin/IsoWeek";
 import Duration from "dayjs/plugin/Duration";
 
-import { ICurrentForecast } from "@/app/weather/type";
-
 dayjs.extend(utc);
 dayjs.extend(isToday);
 dayjs.extend(isSameOrAfter);
