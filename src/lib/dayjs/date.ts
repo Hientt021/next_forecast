@@ -4,8 +4,8 @@ import isToday from "dayjs/plugin/isToday";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isBetween from "dayjs/plugin/isBetween";
-import IsoWeek from "dayjs/plugin/IsoWeek";
-import Duration from "dayjs/plugin/Duration";
+import IsoWeek from "dayjs/plugin/isoWeek";
+import Duration from "dayjs/plugin/duration";
 
 dayjs.extend(utc);
 dayjs.extend(isToday);
