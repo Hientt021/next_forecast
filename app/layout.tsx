@@ -1,18 +1,17 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { lazy } from "react";
 import StoreProvider from "@/src/lib/redux/StoreProvider";
+import type { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { Inter } from "next/font/google";
 import React from "react";
-import { ToastContainer } from "react-toastify";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 const Dimension = dynamic(() => import("@/src/hook/useDevice"), {
   ssr: false,
 });
-const MessageContainer = dynamic(
-  () => import("@/src/components/MessageContainer"),
+
+const SnackProvider = dynamic(
+  () => import("@/src/lib/notistack/SnackbarProvider"),
   {
     ssr: false,
   }
@@ -31,9 +30,10 @@ export default function RootLayout({
     <html lang="en">
       <body id="main" className={inter.className}>
         <StoreProvider>
-          <Dimension />
-          <MessageContainer />
-          {children}
+          <SnackProvider>
+            <Dimension />
+            {children}
+          </SnackProvider>
         </StoreProvider>
       </body>
     </html>

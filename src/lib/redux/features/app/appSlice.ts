@@ -18,7 +18,6 @@ interface IAppSlice {
     isDesktop: boolean;
     width: number;
   };
-  messages: IMessage[];
   isAllowAccessLocation: boolean;
 }
 
@@ -32,7 +31,6 @@ const initialState: IAppSlice = {
     isDesktop: false,
     width: 0,
   },
-  messages: [],
   isAllowAccessLocation: false,
 };
 
@@ -49,23 +47,13 @@ export const appSlice = createSlice({
     setCity: (state, action) => {
       state.city = action.payload;
     },
-    setMessages: (state, action) => {
-      state.messages = [
-        ...state.messages,
-        { ...action.payload, autoClose: action.payload || true },
-      ];
-    },
+
     setAllowAccessLocation: (state, action) => {
       state.isAllowAccessLocation = action.payload;
     },
   },
 });
 
-export const {
-  setUnit,
-  setDevice,
-  setCity,
-  setMessages,
-  setAllowAccessLocation,
-} = appSlice.actions;
+export const { setUnit, setDevice, setCity, setAllowAccessLocation } =
+  appSlice.actions;
 export default appSlice.reducer;

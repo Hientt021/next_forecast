@@ -12,7 +12,6 @@ import { date } from "@/src/lib/dayjs/date";
 import {
   setAllowAccessLocation,
   setCity,
-  setMessages,
 } from "@/src/lib/redux/features/app/appSlice";
 import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
 import { formatForecastData } from "@/src/utils/forecast";
@@ -22,6 +21,8 @@ import WeeklyForecast from "./WeeklyForecast";
 import { StyledWrapper } from "./styled";
 import { ICurrentForecast } from "./type";
 import MessageContainer from "@/src/components/MessageContainer";
+import { useSnackbar } from "notistack";
+import useAlert from "@/src/components/MessageContainer";
 export interface ICoordinate {
   name?: string;
   longitude: string;
@@ -34,6 +35,8 @@ export default function WeatherPage() {
   );
   const { isMobile, isIpad, isDesktop } = device;
   const { query, onQueryChange } = useNavigate();
+  const { showAlert } = useAlert();
+
   const dispatch = useAppDispatch();
   const [weeklyData, setWeeklyData] = useState<ICurrentForecast[]>([]);
   const [loading, setLoading] = useState(true);
@@ -120,13 +123,7 @@ export default function WeatherPage() {
 
   const onDeniedAccessLocation = async (error: GeolocationPositionError) => {
     dispatch(setAllowAccessLocation(false));
-    dispatch(
-      setMessages({
-        content: "Please choose a city",
-        type: "info",
-        autoClose: false,
-      })
-    );
+    showAlert("Please choose a city");
     setLoading(false);
   };
 
