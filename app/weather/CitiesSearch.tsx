@@ -1,78 +1,67 @@
 "use client";
-import { CITIES_TOKEN } from "@/src/const/token";
+import api from "@/src/api/api";
+import useAlert from "@/src/hook/useAlert";
 import useNavigate from "@/src/hook/useNavigate";
+import { setCity } from "@/src/lib/redux/features/app/appSlice";
+import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
+import PlaceIcon from "@mui/icons-material/Place";
 import { Autocomplete, Box, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
-import PlaceIcon from "@mui/icons-material/Place";
-import { callApi } from "@/src/api/callApi";
-import { CITIES_API } from "@/src/api/const";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
-import { setCity } from "@/src/lib/redux/features/app/appSlice";
-export interface ICityProps {
-  name: string;
-  latitude: number;
-  longitude: number;
-  country: string;
-  is_capital: boolean;
-  label?: string;
+export interface IOptions {
+  value: any;
+  label: string;
 }
 
-export interface ICitiesSearch {
-  onSearch?: (city: ICityProps) => void;
-}
+export interface ICitiesSearch {}
 
 export default function CitiesSearch(props: ICitiesSearch) {
   const { onQueryChange, query } = useNavigate();
   const { city } = useAppSelector((state) => state.app);
   const dispatch = useAppDispatch();
-  const [cities, setCities] = useState<ICityProps[]>([]);
+  const [cities, setCities] = useState<any>([]);
+  const [value, setValue] = useState<string | null>(city);
   const [inputValue, setInputValue] = useState(city);
 
-  const getCities = async (name: string) => {
-    if (name) {
-      setInputValue(name);
+  const { showAlert } = useAlert();
 
-      const citiesRes = await callApi(
-        CITIES_API,
-        {
-          name: name,
-          limit: 30,
-        },
-        {
-          headers: {
-            "X-Api-Key": CITIES_TOKEN,
-          },
+  const getCities = async (name: string) => {
+    try {
+      if (name) {
+        const citiesRes = await api.getCities({ q: name, limit: 5 });
+        if (citiesRes) {
+          setCities(citiesRes);
         }
-      );
-      if (citiesRes) {
-        const formatCities = citiesRes.map((el: ICityProps) => ({
-          ...el,
-          label: el.name,
-        }));
-        setCities(formatCities);
       }
+    } catch (error: any) {
+      showAlert(error, "error");
     }
   };
+
+  useEffect(() => {
+    setValue(city);
+  }, [city]);
 
   return (
     <Box display="flex" width="100%" alignItems={"center"}>
       <PlaceIcon sx={{ color: "white" }} />
 
       <Autocomplete
-        options={cities}
-        inputValue={inputValue}
-        onChange={(e, value) => {
-          if (value) {
-            onQueryChange({
-              ...query,
-              latitude: value.latitude,
-              longitude: value.longitude,
-            });
-            dispatch(setCity(value.name));
-          }
+        value={value}
+        onChange={(event: any, newValue: string | null) => {
+          setValue(newValue);
+          const selected = cities.find((el: any) => el.name === newValue);
+          onQueryChange({
+            ...query,
+            latitude: selected?.lat,
+            longitude: selected?.lon,
+          });
         }}
-        onInputChange={(e, value) => getCities(value)}
+        inputValue={inputValue}
+        onInputChange={(event, newInputValue) => {
+          setInputValue(newInputValue);
+          getCities(newInputValue);
+        }}
+        options={cities.map((el: any) => el.name)}
         sx={{
           ".MuiOutlinedInput-notchedOutline": {
             border: "none",
