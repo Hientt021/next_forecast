@@ -18,6 +18,7 @@ import { StyledWrapper } from "./styled";
 import { ICurrentForecast } from "./type";
 import { Grid } from "@mui/material";
 import { getCurrentForecast, getWeeklyForecast } from "@/src/actions";
+import Loader from "@/src/components/common/Loader";
 export interface ICoordinate {
   name?: string;
   longitude: string;
@@ -31,9 +32,30 @@ export default function WeatherPage() {
   const { showAlert } = useAlert();
   const dispatch = useAppDispatch();
   const [weeklyData, setWeeklyData] = useState<ICurrentForecast[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isInitial, setIsInitial] = useState(false);
+  const [currentDt, setCurrentDt] = useState(0);
 
-  const init = async (userCoordinate: ICoordinate, currentUnit: string) => {
+  const init = async () => {
+    try {
+      if (query?.latitude && query?.longitude) await fetchData(query, unit);
+      else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          onAllowedAccessLocation,
+          onDeniedAccessLocation
+        );
+      }
+    } catch (error: any) {
+      showAlert(error, "error");
+    } finally {
+      setIsInitial(true);
+      setTimeout(() => setCurrentDt(date().unix()), 600000);
+    }
+  };
+
+  const fetchData = async (
+    userCoordinate: ICoordinate,
+    currentUnit: string
+  ) => {
     try {
       const currentForecast = await getCurrentForecast(
         userCoordinate,
@@ -48,7 +70,6 @@ export default function WeatherPage() {
           ...weeklyForecast,
         ].sort((a, b) => a.dt - b.dt);
         setWeeklyData(formatWeekly);
-        setLoading(false);
       }
     } catch (error: any) {
       showAlert(error, "error");
@@ -65,18 +86,11 @@ export default function WeatherPage() {
   const onDeniedAccessLocation = async (error: GeolocationPositionError) => {
     dispatch(setAllowAccessLocation(false));
     showAlert("Please choose a city", "info");
-    setLoading(false);
   };
 
   useEffect(() => {
-    if (query?.latitude && query?.longitude) init(query, unit);
-    else if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        onAllowedAccessLocation,
-        onDeniedAccessLocation
-      );
-    }
-  }, [query?.latitude, query?.longitude, unit]);
+    init();
+  }, [query?.latitude, query?.longitude, unit, currentDt]);
 
   const currentData = useMemo(() => {
     return weeklyData.find((el) => el.dt === Number(query?.dt));
@@ -116,7 +130,9 @@ export default function WeatherPage() {
           zIndex: 2,
         }}
       >
-        <WeeklyForecast weeklyData={weeklyData} />
+        <Loader loading={!isInitial} height="100%">
+          <WeeklyForecast weeklyData={weeklyData} />
+        </Loader>
       </Grid>
     </Grid>
   );

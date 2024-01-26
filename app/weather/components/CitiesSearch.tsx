@@ -4,7 +4,7 @@ import api from "@/src/api/api";
 import useAlert from "@/src/hook/useAlert";
 import useNavigate from "@/src/hook/useNavigate";
 import PlaceIcon from "@mui/icons-material/Place";
-import { Autocomplete, Box, TextField } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 export interface IOptions {
   value: any;
@@ -19,14 +19,15 @@ export default function CitiesSearch(props: ICitiesSearch) {
   const { defaultValue = "" } = props;
   const { onQueryChange, query } = useNavigate();
   const [cities, setCities] = useState<any>([]);
-  const [value, setValue] = useState<string | null>(defaultValue);
+  const [value, setValue] = useState<string>(defaultValue);
   const [inputValue, setInputValue] = useState(defaultValue);
-
+  const [loading, setLoading] = useState(false);
   const { showAlert } = useAlert();
 
   const getCitiesData = async (name: string) => {
     try {
       if (name) {
+        setLoading(true);
         const res = await getCities(name);
         if (res) {
           setCities(res);
@@ -34,6 +35,8 @@ export default function CitiesSearch(props: ICitiesSearch) {
       }
     } catch (error: any) {
       showAlert(error, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,10 +49,12 @@ export default function CitiesSearch(props: ICitiesSearch) {
       <PlaceIcon sx={{ color: "white" }} />
 
       <Autocomplete
+        autoSelect={false}
+        loading={loading}
         value={value}
-        onChange={(event: any, newValue: string | null) => {
-          setValue(newValue);
+        onChange={(event: any, newValue: string) => {
           const selected = cities.find((el: any) => el.name === newValue);
+          if (selected) setValue(newValue);
           onQueryChange({
             ...query,
             latitude: selected?.lat,
@@ -70,7 +75,24 @@ export default function CitiesSearch(props: ICitiesSearch) {
           "input, label": { color: "white" },
           borderRadius: 3,
         }}
-        renderInput={(params) => <TextField {...params} />}
+        disableClearable
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            onClick={() => value && getCitiesData(value)}
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {loading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            }}
+          />
+        )}
         popupIcon={false}
         fullWidth
         clearIcon={false}
