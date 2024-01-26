@@ -371,7 +371,15 @@ export default function AirConditions(props: IAirConditions) {
       {contents.map(
         (el) =>
           (el.show || el.show === undefined) && (
-            <Grid item width={300} key={el.key} display="flex" gap={2}>
+            <Grid
+              item
+              minWidth={300}
+              desktop={4}
+              laptop={6}
+              key={el.key}
+              display="flex"
+              gap={2}
+            >
               <CardComponent loading={!currentData} p={3} width={"100%"}>
                 <Box
                   display="flex"
