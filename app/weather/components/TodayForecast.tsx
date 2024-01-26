@@ -15,6 +15,7 @@ import {
   ArrowRightRounded,
 } from "@mui/icons-material";
 import IconComponent from "@/src/components/icons";
+import Loader from "@/src/components/common/Loader";
 
 interface ITodayForecast {
   currentList: ICurrentForecast[];
@@ -100,12 +101,12 @@ export default function TodayForecast(props: ITodayForecast) {
   );
 
   return (
-    currentList && (
+    <Loader loading={!currentList}>
       <Stack mt={!isMobileDevice ? 0 : 2} gap={!isMobileDevice ? 0 : 2}>
         {renderChart}
         <AirConditions currentData={currentList?.[active]} />
         {renderTodayList}
       </Stack>
-    )
+    </Loader>
   );
 }
