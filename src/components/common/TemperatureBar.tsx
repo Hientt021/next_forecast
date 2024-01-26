@@ -1,7 +1,7 @@
 "use client";
 import { Box, Slider, Stack, Typography } from "@mui/material";
-import useUnit from "../hook/useUnit";
-import { getDescription } from "@/app/weather/AirConditions";
+import useUnit from "../../hook/useUnit";
+import { getDescription } from "@/app/weather/components/AirConditions";
 import { useMemo } from "react";
 import { UNIT } from "@/app/weather/type";
 
@@ -21,7 +21,7 @@ export default function TemperatureBar(props: ITemperatureBar) {
 
   const tempList = useMemo(
     () =>
-      unit === UNIT.C
+      unit === UNIT.METRIC
         ? list
         : list.map((el) => ({ ...el, value: convertMetric(el.value) })),
     [unit]
@@ -32,7 +32,7 @@ export default function TemperatureBar(props: ITemperatureBar) {
     [value, list]
   );
 
-  const defaultTemp = useMemo(() => (unit === UNIT.C ? 0 : 32), [unit]);
+  const defaultTemp = useMemo(() => (unit === UNIT.METRIC ? 0 : 32), [unit]);
 
   return (
     <Stack gap={1}>

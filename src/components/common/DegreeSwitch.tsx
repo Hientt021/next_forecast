@@ -1,8 +1,8 @@
 "use client";
 import { UNIT } from "@/app/weather/type";
 import { Switch, styled } from "@mui/material";
-import { setUnit } from "../lib/redux/features/app/appSlice";
-import { useAppDispatch, useAppSelector } from "../lib/redux/store";
+import { setUnit } from "../../lib/redux/features/app/appSlice";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/store";
 
 const StyledSwitch = styled(Switch)(({ theme }) => ({
   padding: 6,
@@ -40,9 +40,9 @@ export default function DegreeSwitch(props: IDegreeSwitch) {
   const { unit } = useAppSelector((state) => state.app);
   return (
     <StyledSwitch
-      checked={unit === UNIT.C}
+      checked={unit === UNIT.METRIC}
       onChange={(e, checked) => {
-        dispatch(setUnit(checked ? UNIT.C : UNIT.F));
+        dispatch(setUnit(checked ? UNIT.METRIC : UNIT.IMPERIAL));
       }}
     />
   );

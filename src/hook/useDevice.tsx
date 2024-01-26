@@ -5,15 +5,19 @@ import { useAppDispatch, useAppSelector } from "../lib/redux/store";
 const BREAK_POINTS = [
   {
     device: "Desktop",
+    breakPoint: 1200,
+  },
+  {
+    device: "Laptop",
     breakPoint: 1025,
   },
   {
-    device: "Ipad",
-    breakPoint: 481,
+    device: "Tablet",
+    breakPoint: 640,
   },
   {
     device: "Mobile",
-    breakPoint: 320,
+    breakPoint: 0,
   },
 ];
 const Dimension = () => {
@@ -28,8 +32,11 @@ const Dimension = () => {
           name: current?.device,
           width: width,
           isMobile: current?.device === "Mobile",
-          isIpad: current?.device === "Ipad",
+          isIpad: current?.device === "Tablet",
           isDesktop: current?.device === "Desktop",
+          isLaptop: current?.device === "Laptop",
+          isMobileDevice:
+            current?.device === "Tablet" || current?.device === "Mobile",
         })
       );
     };

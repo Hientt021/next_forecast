@@ -1,20 +1,20 @@
 "use client";
-import CardComponent from "@/src/components/CardComponent";
+import CardComponent from "@/src/components/common/CardComponent";
 import DailyForecastChart from "@/src/components/chart/DailyForecastChart";
 import useNavigate from "@/src/hook/useNavigate";
 import { date } from "@/src/lib/dayjs/date";
 import { Box, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import AirConditions from "./AirConditions";
-import { ICurrentForecast } from "./type";
+import { ICurrentForecast } from "../type";
 import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
-import ForecastIcon from "@/src/components/ForecastIcon";
 import useUnit from "@/src/hook/useUnit";
 import {
   ArrowRight,
   ArrowRightAltOutlined,
   ArrowRightRounded,
 } from "@mui/icons-material";
+import IconComponent from "@/src/components/icons";
 
 interface ITodayForecast {
   currentList: ICurrentForecast[];
@@ -25,7 +25,7 @@ export default function TodayForecast(props: ITodayForecast) {
   const { currentList, onOpen } = props;
   const { query, onQueryChange } = useNavigate();
   const [active, setActive] = useState(0);
-  const { isMobile, isIpad, isDesktop } = useAppSelector(
+  const { isMobile, isMobileDevice } = useAppSelector(
     (state) => state.app.device
   );
   const { formatUnit } = useUnit();
@@ -58,7 +58,7 @@ export default function TodayForecast(props: ITodayForecast) {
     </CardComponent>
   );
 
-  const renderTodayList = !isDesktop && (
+  const renderTodayList = !!isMobileDevice && (
     <>
       <Box display="flex" justifyContent={"flex-end"}>
         <Typography
@@ -87,7 +87,7 @@ export default function TodayForecast(props: ITodayForecast) {
             gap={1}
           >
             <Typography fontWeight={600}>{formatUnit(el.temp)}</Typography>
-            <ForecastIcon data={el} size={24} />
+            <IconComponent name={el.icon} size={24} />
             <Typography fontWeight={600}>
               {currentData?.dt === el.dt
                 ? "Now"
@@ -98,9 +98,10 @@ export default function TodayForecast(props: ITodayForecast) {
       </Box>
     </>
   );
+
   return (
     currentList && (
-      <Stack mt={isDesktop ? 0 : 2} gap={isDesktop ? 0 : 2}>
+      <Stack mt={!isMobileDevice ? 0 : 2} gap={!isMobileDevice ? 0 : 2}>
         {renderChart}
         <AirConditions currentData={currentList?.[active]} />
         {renderTodayList}

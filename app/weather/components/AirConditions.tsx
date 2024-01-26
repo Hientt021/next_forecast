@@ -1,8 +1,8 @@
 "use client";
-import CardComponent from "@/src/components/CardComponent";
-import ProgressStep from "@/src/components/ProgressStep";
-import SemiCircle from "@/src/components/SemiCircle";
-import TemperatureBar from "@/src/components/TemperatureBar";
+import CardComponent from "@/src/components/common/CardComponent";
+import ProgressStep from "@/src/components/common/ProgressStep";
+import SemiCircle from "@/src/components/common/SemiCircle";
+import TemperatureBar from "@/src/components/common/TemperatureBar";
 import SemiDonutChart from "@/src/components/chart/SemiDonutChart";
 import AirIcon from "@mui/icons-material/Air";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
@@ -10,7 +10,7 @@ import MasksIcon from "@mui/icons-material/Masks";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import WaterDropIcon from "@mui/icons-material/WaterDrop";
 import { Box, Grid, Stack, Typography } from "@mui/material";
-import { ICurrentForecast } from "./type";
+import { ICurrentForecast } from "../type";
 import { useAppSelector } from "@/src/lib/redux/store";
 import useUnit from "@/src/hook/useUnit";
 import React from "react";
@@ -205,15 +205,15 @@ export const getDescription = (value: number, list: IProgressList[]) => {
 
 export default function AirConditions(props: IAirConditions) {
   const { currentData } = props;
-  const { isMobile, isDesktop } = useAppSelector((state) => state.app.device);
-  const { formatUnit } = useUnit();
+  const { isMobileDevice } = useAppSelector((state) => state.app.device);
+  const { formatUnit, formatSpeed } = useUnit();
   const contents = [
     {
       label: "Humidity",
       key: "humidity",
       icon: <WaterDropIcon />,
       render: (value: any) =>
-        !isDesktop ? (
+        isMobileDevice ? (
           value.humidity + "%"
         ) : (
           <Stack gap={1}>
@@ -241,17 +241,17 @@ export default function AirConditions(props: IAirConditions) {
     {
       label: "Wind",
       key: "wind",
-      unit: "km/h",
+
       icon: <AirIcon />,
       render: (value: any) =>
-        !isDesktop ? (
-          value.wind + "km/h"
+        isMobileDevice ? (
+          formatSpeed(value.wind)
         ) : (
           <Box display={"flex"} alignItems={"center"} justifyContent={"center"}>
             <SemiCircle
               value={value?.wind}
               max={40}
-              label={value?.wind + " km/h"}
+              label={formatSpeed(value?.wind)}
             />
           </Box>
         ),
@@ -262,7 +262,7 @@ export default function AirConditions(props: IAirConditions) {
       unit: "°C",
       icon: <ThermostatIcon />,
       render: (value: any) =>
-        !isDesktop ? (
+        isMobileDevice ? (
           formatUnit(value?.feels_like)
         ) : (
           <TemperatureBar
@@ -277,19 +277,19 @@ export default function AirConditions(props: IAirConditions) {
       show: !!currentData?.uvIndex,
       icon: <Brightness7Icon />,
       render: (value: any) =>
-        !isDesktop ? (
+        isMobileDevice ? (
           value.uvIndex
         ) : (
           <SemiDonutChart list={UV_LIST} max={13} value={value?.uvIndex!!} />
         ),
     },
     {
-      label: "Air Quality",
+      label: "Air Pollution",
       key: "airQuality",
       show: !!currentData?.airQuality,
       icon: <MasksIcon />,
       render: (value: any) =>
-        !isDesktop ? (
+        isMobileDevice ? (
           value.airQuality
         ) : (
           <SemiDonutChart
@@ -306,14 +306,14 @@ export default function AirConditions(props: IAirConditions) {
       className="icon"
       p={"4px"}
       sx={{
-        background: !isDesktop ? "transparent" : "#5C9CE5",
+        background: isMobileDevice ? "transparent" : "#5C9CE5",
         borderRadius: "50%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         svg: {
-          fontSize: !isDesktop ? "2rem" : "1.25rem",
-          path: { fill: !isDesktop ? "#5C9CE5" : "white " },
+          fontSize: isMobileDevice ? "2rem" : "1.25rem",
+          path: { fill: isMobileDevice ? "#5C9CE5" : "white " },
         },
       }}
     >
@@ -321,7 +321,7 @@ export default function AirConditions(props: IAirConditions) {
     </Box>
   );
 
-  return !isDesktop ? (
+  return isMobileDevice ? (
     <CardComponent
       p={2}
       sx={{
@@ -339,7 +339,7 @@ export default function AirConditions(props: IAirConditions) {
         {contents.map(
           (el) =>
             (el.show || el.show === undefined) && (
-              <Grid key={el.key} item xs={6} display="flex">
+              <Grid key={el.key} item mobile={6} display="flex">
                 {renderIcon(el.icon)}
                 <Stack>
                   <Typography className="step-label">{el.label}</Typography>
@@ -371,16 +371,7 @@ export default function AirConditions(props: IAirConditions) {
       {contents.map(
         (el) =>
           (el.show || el.show === undefined) && (
-            <Grid
-              item
-              xs={12}
-              lg={6}
-              xl={4}
-              key={el.key}
-              display="flex"
-              gap={2}
-              sx={{}}
-            >
+            <Grid item width={300} key={el.key} display="flex" gap={2}>
               <CardComponent loading={!currentData} p={3} width={"100%"}>
                 <Box
                   display="flex"

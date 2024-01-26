@@ -1,9 +1,8 @@
 "use client";
+import { getCities } from "@/src/actions";
 import api from "@/src/api/api";
 import useAlert from "@/src/hook/useAlert";
 import useNavigate from "@/src/hook/useNavigate";
-import { setCity } from "@/src/lib/redux/features/app/appSlice";
-import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
 import PlaceIcon from "@mui/icons-material/Place";
 import { Autocomplete, Box, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -12,24 +11,25 @@ export interface IOptions {
   label: string;
 }
 
-export interface ICitiesSearch {}
+export interface ICitiesSearch {
+  defaultValue?: string;
+}
 
 export default function CitiesSearch(props: ICitiesSearch) {
+  const { defaultValue = "" } = props;
   const { onQueryChange, query } = useNavigate();
-  const { city } = useAppSelector((state) => state.app);
-  const dispatch = useAppDispatch();
   const [cities, setCities] = useState<any>([]);
-  const [value, setValue] = useState<string | null>(city);
-  const [inputValue, setInputValue] = useState(city);
+  const [value, setValue] = useState<string | null>(defaultValue);
+  const [inputValue, setInputValue] = useState(defaultValue);
 
   const { showAlert } = useAlert();
 
-  const getCities = async (name: string) => {
+  const getCitiesData = async (name: string) => {
     try {
       if (name) {
-        const citiesRes = await api.getCities({ q: name, limit: 5 });
-        if (citiesRes) {
-          setCities(citiesRes);
+        const res = await getCities(name);
+        if (res) {
+          setCities(res);
         }
       }
     } catch (error: any) {
@@ -38,8 +38,8 @@ export default function CitiesSearch(props: ICitiesSearch) {
   };
 
   useEffect(() => {
-    setValue(city);
-  }, [city]);
+    if (defaultValue) setValue(defaultValue);
+  }, [defaultValue]);
 
   return (
     <Box display="flex" width="100%" alignItems={"center"}>
@@ -59,7 +59,7 @@ export default function CitiesSearch(props: ICitiesSearch) {
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
           setInputValue(newInputValue);
-          getCities(newInputValue);
+          getCitiesData(newInputValue);
         }}
         options={cities.map((el: any) => el.name)}
         sx={{
@@ -73,6 +73,7 @@ export default function CitiesSearch(props: ICitiesSearch) {
         renderInput={(params) => <TextField {...params} />}
         popupIcon={false}
         fullWidth
+        clearIcon={false}
       />
     </Box>
   );

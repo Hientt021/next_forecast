@@ -1,6 +1,6 @@
 "use client";
 
-import { IProgressList } from "@/app/weather/AirConditions";
+import { IProgressList } from "@/app/weather/components/AirConditions";
 import {
   Box,
   Grid,
@@ -10,7 +10,7 @@ import {
   styled,
 } from "@mui/material";
 import { useMemo } from "react";
-import useUnit from "../hook/useUnit";
+import useUnit from "../../hook/useUnit";
 
 interface IProgressStep extends LinearProgressProps {
   steps: IProgressList[];
@@ -65,7 +65,7 @@ export default function ProgressStep(props: IProgressStep) {
   return (
     <Grid container spacing={gap}>
       {stepArray.map((el, i) => (
-        <Grid key={i} item xs={12 / steps.length}>
+        <Grid key={i} item mobile={12 / steps.length}>
           <Typography className="step-label">{steps[i].label}</Typography>
           <LinearProgress
             sx={{ borderRadius: "1rem", height: "0.5rem" }}

@@ -4,6 +4,10 @@ import { UNIT } from "@/app/weather/type";
 import { useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+interface IParams {
+  pathname?: string;
+  query?: any;
+}
 const useNavigate = () => {
   const { unit } = useAppSelector((state) => state.app);
   const search = useSearchParams();
@@ -19,23 +23,25 @@ const useNavigate = () => {
     return result;
   }, [search]);
 
-  const createSearchParams = (url: string, params: any) => {
-    const api = Object.keys(params).reduce(
+  const createSearchParams = (props: IParams) => {
+    const { pathname: pathParam = pathname, query = {} } = props;
+    const api = Object.keys(query).reduce(
       (prev: string, cur: string, index: number) => {
-        if (params[cur])
-          return prev + (index ? "&" : "") + cur + "=" + params[cur];
+        if (query[cur])
+          return prev + (index ? "&" : "") + cur + "=" + query[cur];
         else return prev;
       },
-      url + "?"
+      pathParam + "?"
     );
+
     return api;
   };
 
-  const onNavigate = ({ path, query }: { path?: string; query: any }) =>
-    router.push(createSearchParams(path || pathname, query));
+  const onNavigate = (props: IParams) => router.push(createSearchParams(props));
 
-  const onQueryChange = (query: any) => {
-    router.push(createSearchParams(pathname, query));
+  const onQueryChange = (props: any) => {
+    const str = createSearchParams({ query: props });
+    router.push(str);
   };
 
   return {

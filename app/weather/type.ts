@@ -11,8 +11,8 @@ export interface ICurrentForecast {
   airQuality?: number;
 }
 export enum UNIT {
-  C = "metric",
-  F = "imperial",
+  METRIC = "metric",
+  IMPERIAL = "imperial",
 }
 export type IUnit = "metric" | "imperial";
 

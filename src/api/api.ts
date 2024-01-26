@@ -5,14 +5,24 @@ type APIMap = {
   [key in keyof typeof weatherEndpoints]: (
     params?: any,
     option?: RequestInit
-  ) => Promise<any>;
+  ) => Promise<IApiResponse>;
 };
+
+interface IApiResponse {
+  success: boolean;
+  message: string;
+  data?: any;
+}
 
 const fetchData = async (
   endpoint: any,
   params: any,
   requestOptions?: RequestInit
 ) => {
+  const arr = endpoint.split(" ");
+  const method = arr[0];
+  const endpointStr = arr[1];
+
   const url = Object.keys(params).reduce(
     (prev: string, cur: string, index: number) => {
       if (params[cur])
@@ -22,11 +32,20 @@ const fetchData = async (
     BASE_URL + endpoint + "?"
   );
 
-  const res = await fetch(url, requestOptions);
-  const data = await res.json();
+  const options = {
+    ...requestOptions,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
 
-  if (res.ok) return Promise.resolve(data);
-  else return Promise.reject(data.message);
+  const res = await fetch(url, options);
+  const data = await res.json();
+  return {
+    success: res.ok,
+    message: data.message,
+    data: res.ok ? data : undefined,
+  };
 };
 
 const api: any = {};

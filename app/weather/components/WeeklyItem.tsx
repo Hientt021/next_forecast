@@ -1,8 +1,9 @@
-import CardComponent from "@/src/components/CardComponent";
-import ForecastIcon from "@/src/components/ForecastIcon";
+import CardComponent from "@/src/components/common/CardComponent";
+import IconComponent from "@/src/components/icons";
 import useNavigate from "@/src/hook/useNavigate";
 import { useAppSelector } from "@/src/lib/redux/store";
 import { Box, Stack, Typography } from "@mui/material";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
 interface IWeeklyItem {
@@ -13,7 +14,7 @@ interface IWeeklyItem {
 export default function WeeklyItem(props: IWeeklyItem) {
   const { data, active = false, onClick } = props;
   const { isMobile } = useAppSelector((state) => state.app.device);
-
+  const { query, createSearchParams } = useNavigate();
   const isLoading = useMemo(() => {
     let result = false;
     Object.keys(data).forEach((key) => {
@@ -42,7 +43,7 @@ export default function WeeklyItem(props: IWeeklyItem) {
         gap={1}
       >
         <Typography fontWeight={600}>{data.date}</Typography>
-        <ForecastIcon size={80} data={data} />
+        <IconComponent size={80} name={data.icon} />
         <Typography fontWeight={600}>{data.min + " / " + data.max}</Typography>
       </Box>
     </CardComponent>

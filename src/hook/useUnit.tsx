@@ -4,14 +4,29 @@ import { UNIT } from "@/app/weather/type";
 
 const useUnit = () => {
   const { unit } = useAppSelector((state) => state.app);
+
   const formatUnit = (value?: number | string) => {
     if (!value) return "";
     switch (unit) {
-      case UNIT.C: {
+      case UNIT.METRIC: {
         return Number(value) + "°C";
       }
-      case UNIT.F: {
+      case UNIT.IMPERIAL: {
         return Number(value) + "°F";
+      }
+      default:
+        return "";
+    }
+  };
+
+  const formatSpeed = (value?: number | string) => {
+    if (!value) return "";
+    switch (unit) {
+      case UNIT.METRIC: {
+        return Number(value) + "m/s";
+      }
+      case UNIT.IMPERIAL: {
+        return Number(value) + "km/h";
       }
       default:
         return "";
@@ -33,6 +48,7 @@ const useUnit = () => {
     formatUnit,
     convertMetric,
     convertImperial,
+    formatSpeed,
   };
 };
 

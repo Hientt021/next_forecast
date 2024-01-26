@@ -2,7 +2,10 @@
 import { Box, Typography, styled } from "@mui/material";
 import { useEffect, useMemo, useRef } from "react";
 import NavigationIcon from "@mui/icons-material/Navigation";
-import { UV_LIST, getDescription } from "@/app/weather/AirConditions";
+import {
+  UV_LIST,
+  getDescription,
+} from "@/app/weather/components/AirConditions";
 import ApexChart from "./ApexChart";
 interface ISemiDonutChart {
   value: number;

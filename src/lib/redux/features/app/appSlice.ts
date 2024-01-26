@@ -14,8 +14,10 @@ interface IAppSlice {
   device: {
     name: string;
     isMobile: boolean;
+    isMobileDevice: boolean;
     isIpad: boolean;
     isDesktop: boolean;
+    isLaptop: boolean;
     width: number;
   };
   isAllowAccessLocation: boolean;
@@ -29,6 +31,8 @@ const initialState: IAppSlice = {
     isMobile: false,
     isIpad: false,
     isDesktop: false,
+    isLaptop: false,
+    isMobileDevice: false,
     width: 0,
   },
   isAllowAccessLocation: false,

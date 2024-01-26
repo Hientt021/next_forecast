@@ -3,14 +3,15 @@ import useNavigate from "@/src/hook/useNavigate";
 import useUnit from "@/src/hook/useUnit";
 import { date, getDayName, isSameUnixDate } from "@/src/lib/dayjs/date";
 import { useAppSelector } from "@/src/lib/redux/store";
-import { Drawer, Grid, Stack, Typography } from "@mui/material";
+import { Box, Drawer, Grid, Stack, Typography } from "@mui/material";
 import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import TodayForecast from "./TodayForecast";
 import WeeklyItem from "./WeeklyItem";
-import { StyledWrapper } from "./styled";
-import { ICurrentForecast, IDailyForecast } from "./type";
+import { Scrollable, StyledWrapper } from "../styled";
+import { ICurrentForecast, IDailyForecast } from "../type";
 import EmptyLocation from "./EmptyLocation";
+import { GREETING } from "../const";
 
 interface IWeeklyForecast {
   weeklyData?: ICurrentForecast[];
@@ -26,9 +27,7 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const { onQueryChange, query } = useNavigate();
   const { formatUnit } = useUnit();
-  const { isMobile, isIpad, isDesktop } = useAppSelector(
-    (state) => state.app.device
-  );
+  const { isMobileDevice } = useAppSelector((state) => state.app.device);
   const { isAllowAccessLocation } = useAppSelector((state) => state.app);
 
   const [active, setActive] = useState(0);
@@ -89,11 +88,11 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
     <Grid container>
       {weeklyList.map((el: any, i: number) => {
         return (
-          <Grid key={i} item xs={12}>
+          <Grid key={i} item mobile={12}>
             <WeeklyItem
               active={active === i}
               onClick={() => {
-                isMobile && setOpenDrawer(false);
+                isMobileDevice && setOpenDrawer(false);
                 setActive(i);
                 onQueryChange({
                   ...query,
@@ -120,59 +119,53 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
   }, [weeklyData]);
 
   if (!(query?.latitude && query?.longitude))
-    return <EmptyLocation className={isDesktop ? "wrapper" : ""} />;
+    return <EmptyLocation className={isMobileDevice ? "wrapper" : ""} />;
 
   return (
-    <StyledWrapper
-      isMobile={isMobile}
-      loading={loading}
-      className={isDesktop ? "wrapper" : ""}
-      p={isDesktop ? 5 : 0}
-      pr={isDesktop ? 2 : 0}
-    >
-      {isDesktop && (
-        <Stack mb={3}>
+    <Grid container spacing={1}>
+      {!isMobileDevice && (
+        <Grid item desktop={12} mb={1}>
           <Typography variant="h5" fontWeight={600}>
-            {"Welcome"}
+            {
+              GREETING.find((el) => Number(date().format("HH")) >= el.hour)
+                ?.label
+            }
           </Typography>
           <Typography variant="body1" fontWeight={400}>
             {"Check out today's weather information"}
           </Typography>
-        </Stack>
+        </Grid>
       )}
-      <Grid container spacing={2}>
-        <Grid
-          item
-          xs={12}
-          md={9}
-          xl={10}
-          className={isDesktop ? "scroll" : ""}
-          pb={isDesktop ? 20 : 0}
-        >
-          {weeklyList.length > 0 && renderToday}
-        </Grid>
 
-        <Grid
-          item
-          xs={12}
-          md={3}
-          xl={2}
-          pb={isDesktop ? 20 : 0}
-          sx={{
-            paddingRight: 1,
-          }}
-          className={isDesktop ? "scroll" : ""}
+      <Scrollable
+        item
+        tablet={12}
+        laptop={9}
+        desktop={10}
+        pb={isMobileDevice ? 10 : 0}
+      >
+        {renderToday}
+      </Scrollable>
+
+      <Scrollable
+        item
+        tablet={12}
+        laptop={3}
+        desktop={2}
+        pb={isMobileDevice ? 10 : 0}
+        sx={{
+          paddingRight: 1,
+        }}
+      >
+        {!isMobileDevice && renderWeekly}
+        <Drawer
+          open={openDrawer}
+          onClose={() => setOpenDrawer(false)}
+          anchor="bottom"
         >
-          {isDesktop && renderWeekly}
-          <Drawer
-            open={openDrawer}
-            onClose={() => setOpenDrawer(false)}
-            anchor="bottom"
-          >
-            {renderWeekly}
-          </Drawer>
-        </Grid>
-      </Grid>
-    </StyledWrapper>
+          {renderWeekly}
+        </Drawer>
+      </Scrollable>
+    </Grid>
   );
 }
