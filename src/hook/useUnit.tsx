@@ -1,54 +1,96 @@
 import { useSelector } from "react-redux";
 import { useAppSelector } from "../lib/redux/store";
-import { UNIT } from "@/app/weather/type";
+import {
+  IDayForecast,
+  IHourForecast,
+  UNIT,
+} from "@/app/(dashboard)/weather/type";
+import { useMemo } from "react";
+
+export type IUnitKey = "avgtemp" | "temp" | "feelslike";
+export type IUnitValue = Partial<IDayForecast & IHourForecast>;
+export type IUnitOptions = { unit?: boolean };
 
 const useUnit = () => {
   const { unit } = useAppSelector((state) => state.app);
-
-  const formatUnit = (value?: number | string) => {
-    if (!value) return "";
+  const tempUnit = useMemo(() => (unit === UNIT.METRIC ? "°C" : "°F"), [unit]);
+  const speedUnit = useMemo(
+    () => (unit === UNIT.METRIC ? "m/s" : "km/h"),
+    [unit]
+  );
+  const formatTemp = (
+    value: IUnitValue,
+    key: IUnitKey,
+    options?: IUnitOptions
+  ) => {
+    const isUnit = options?.unit;
+    if (!value) return isUnit ? "" : 0;
     switch (unit) {
       case UNIT.METRIC: {
-        return Number(value) + "°C";
+        return isUnit
+          ? value[(key + "_c") as keyof IUnitValue] + "°C"
+          : (value[(key + "_c") as keyof IUnitValue] as number);
       }
       case UNIT.IMPERIAL: {
-        return Number(value) + "°F";
+        return isUnit
+          ? value[(key + "_f") as keyof IUnitValue] + "°F"
+          : (value[(key + "_f") as keyof IUnitValue] as number);
       }
       default:
-        return "";
+        return isUnit ? "" : 0;
     }
   };
 
-  const formatSpeed = (value?: number | string) => {
-    if (!value) return "";
+  const formatSpeed = (value: IUnitValue, options?: IUnitOptions) => {
+    const isUnit = options?.unit;
+    if (!value) return isUnit ? "" : 0;
     switch (unit) {
       case UNIT.METRIC: {
-        return Number(value) + "m/s";
+        return isUnit ? value.wind_mph + "m/s" : value.wind_mph;
       }
       case UNIT.IMPERIAL: {
-        return Number(value) + "km/h";
+        return isUnit ? value.wind_kph + "km/h" : value.wind_kph;
       }
       default:
-        return "";
+        return isUnit ? "" : 0;
     }
   };
 
-  const convertMetric = (value: number) => {
-    const newValue = (9 / 5) * value + 32;
-    return Math.floor(newValue);
+  const convertSpeed = (value: number, toUnit?: UNIT) => {
+    if (!value) return 0;
+    switch (toUnit || unit) {
+      case UNIT.METRIC: {
+        return value / 1.6;
+      }
+      case UNIT.IMPERIAL: {
+        return value * 1.6;
+      }
+      default:
+        return 0;
+    }
   };
 
-  const convertImperial = (value: number) => {
-    const newValue = (5 / 9) * (value - 32);
-    return Math.floor(newValue);
+  const convertTemper = (value: number, toUnit?: UNIT) => {
+    switch (toUnit || unit) {
+      case UNIT.METRIC: {
+        return (value - 32) * (5 / 9);
+      }
+      case UNIT.IMPERIAL: {
+        return value * (9 / 5) + 32;
+      }
+      default:
+        return 0;
+    }
   };
 
   return {
     unit,
-    formatUnit,
-    convertMetric,
-    convertImperial,
+    formatTemp,
     formatSpeed,
+    tempUnit,
+    convertTemper,
+    speedUnit,
+    convertSpeed,
   };
 };
 

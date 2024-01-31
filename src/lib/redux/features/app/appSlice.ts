@@ -1,5 +1,5 @@
-import { ICoordinate } from "@/app/weather/page";
-import { ICurrentForecast } from "@/app/weather/type";
+import { ICoordinate } from "@/app/(dashboard)/weather/page";
+import { IHourForecast, ILocation } from "@/app/(dashboard)/weather/type";
 import { IMessageType } from "@/src/hook/useAlert";
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -10,7 +10,6 @@ interface IMessage {
 }
 interface IAppSlice {
   unit: string;
-  city: string;
   device: {
     name: string;
     isMobile: boolean;
@@ -21,11 +20,13 @@ interface IAppSlice {
     width: number;
   };
   isAllowAccessLocation: boolean;
+  current?: IHourForecast;
+  location?: ILocation;
 }
 
 const initialState: IAppSlice = {
   unit: "metric",
-  city: "",
+  location: undefined,
   device: {
     name: "",
     isMobile: false,
@@ -36,6 +37,7 @@ const initialState: IAppSlice = {
     width: 0,
   },
   isAllowAccessLocation: false,
+  current: undefined,
 };
 
 export const appSlice = createSlice({
@@ -48,16 +50,23 @@ export const appSlice = createSlice({
     setDevice: (state, action) => {
       state.device = action.payload;
     },
-    setCity: (state, action) => {
-      state.city = action.payload;
+    setLocation: (state, action) => {
+      state.location = action.payload;
     },
-
+    setCurrent: (state, action) => {
+      state.current = action.payload;
+    },
     setAllowAccessLocation: (state, action) => {
       state.isAllowAccessLocation = action.payload;
     },
   },
 });
 
-export const { setUnit, setDevice, setCity, setAllowAccessLocation } =
-  appSlice.actions;
+export const {
+  setUnit,
+  setDevice,
+  setLocation,
+  setAllowAccessLocation,
+  setCurrent,
+} = appSlice.actions;
 export default appSlice.reducer;

@@ -1,22 +1,33 @@
 "use client";
-import { ICurrentForecast } from "@/app/weather/type";
+import {
+  ICurrentForecast,
+  IHourForecast,
+  UNIT,
+} from "@/app/(dashboard)/weather/type";
 import { date } from "@/src/lib/dayjs/date";
 import { Box } from "@mui/material";
-import React, { Component, useMemo } from "react";
+import React, { Component, useEffect, useMemo, useRef } from "react";
 import ApexChart from "./ApexChart";
+import useUnit from "@/src/hook/useUnit";
+import useNavigate from "@/src/hook/useNavigate";
+import { useAppSelector } from "@/src/lib/redux/store";
+import useDate from "@/src/hook/useDate";
 
 interface IDailyForecastChart {
-  data: ICurrentForecast[];
-  active: number;
+  data: IHourForecast[];
   onMarkerClick: (index: number) => void;
+  active: number;
 }
 
 export default function DailyForecastChart(props: IDailyForecastChart) {
-  const { data, active = 0, onMarkerClick } = props;
-  const currentData = data.find((el) => el.airQuality && el.uvIndex);
+  const { data, onMarkerClick, active } = props;
+  const { unit, formatTemp } = useUnit();
+  const { query } = useNavigate();
+  const { location } = useAppSelector((state) => state.app);
+  const { formatByTimezone } = useDate();
+
   const options = {
     dataLabels: {
-      enabled: true,
       offsetY: -10,
       style: {
         fontSize: "1rem",
@@ -24,7 +35,9 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       background: {
         enabled: false,
       },
-      formatter: (value: string) => value + "°",
+      formatter: (val: number, opts: any) => {
+        return opts.dataPointIndex === active ? val + "°" : "";
+      },
     },
     stroke: {
       curve: "smooth",
@@ -45,16 +58,15 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       },
     },
     xaxis: {
+      offsetY: 10,
       axisBorder: {
         show: false,
       },
-      categories: data.map((el) => el.dt),
-      tickAmount: data.length,
+      categories: data.map((el, i) => el.time_epoch),
+      tickAmount: 7,
       labels: {
         formatter: (value: number) => {
-          return currentData?.dt === value
-            ? "Now"
-            : date.unix(value).format("HH:mm");
+          return formatByTimezone(value, "HH:mm");
         },
         style: {
           fontSize: "1rem",
@@ -75,11 +87,9 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       show: false,
     },
     grid: {
-      borderColor: "grey",
-      position: "front",
       xaxis: {
         lines: {
-          show: true,
+          show: false,
         },
       },
       yaxis: {
@@ -88,44 +98,71 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
         },
       },
       padding: {
-        left: 70,
-        right: 70,
+        left: 50,
+        right: 50,
       },
     },
-    tooltip: {
-      shared: false,
-      intersect: true,
-    },
-
     markers: {
-      size: 5,
-      strokeWidth: 0,
-      style: "hollow",
+      discrete: [
+        {
+          seriesIndex: 0,
+          dataPointIndex: active,
+          fillColor: "#008ffb",
+          strokeWidth: 0,
+          strokeColor: "transparent",
+          size: 7,
+          shape: "circle",
+        },
+      ],
     },
-    // annotations: {
-    //   xaxis: [
-    //     {
-    //       x: 4,
-    //       borderColor: "red",
-    //       strokeDashArray: 0,
-    //     },
-    //   ],
-    // },
+    tooltip: {
+      custom: ({ series, seriesIndex, dataPointIndex, w }: any) => {
+        const current = data[dataPointIndex];
+        const hour = formatByTimezone(current.time_epoch, "HH:mm");
+        const temp = formatTemp(current, "temp", { unit: true });
+
+        return (
+          '<div class="custom-tooltip">' +
+          "<p>" +
+          hour +
+          "</p>" +
+          "<p>" +
+          temp +
+          "</p>" +
+          "</div>"
+        );
+      },
+    },
   };
   const series = [
     {
-      name: "",
-      data: data.map((el) => el.temp),
+      name: location?.name + " Temperature",
+      data: data.map((el, i) => (unit === UNIT.METRIC ? el.temp_c : el.temp_f)),
     },
   ];
   return (
     <Box
       sx={{
-        ".apexcharts-gridline": {
+        ".apexcharts-xaxis-label": {
+          transform: "none",
+        },
+        "line.apexcharts-gridline": {
           display: "none",
         },
-        [`.apexcharts-gridline:nth-of-type(${active + 1})`]: {
-          display: "inline",
+        [`line.apexcharts-gridline::nth-of-type(${active + 1})`]: {
+          display: "inline-block",
+        },
+
+        ".custom-tooltip": {
+          padding: 1,
+          fontWeight: 600,
+        },
+        "g.apexcharts-data-labels::before": {
+          content: `"hi"`,
+          display: "block",
+          width: 30,
+          height: 30,
+          background: "red",
         },
       }}
     >
@@ -133,7 +170,7 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
         options={options as any}
         series={series}
         type="area"
-        height={250}
+        height={200}
       />
     </Box>
   );

@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { useAppSelector } from "../lib/redux/store";
-import { UNIT } from "@/app/weather/type";
+import { UNIT } from "@/app/(dashboard)/weather/type";
 import { useCallback, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -41,7 +41,7 @@ const useNavigate = () => {
 
   const onQueryChange = (props: any) => {
     const str = createSearchParams({ query: props });
-    router.push(str);
+    router.replace(str);
   };
 
   return {

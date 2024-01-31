@@ -1,5 +1,5 @@
-import { WEATHER_TOKEN } from "../const/token";
-import { BASE_URL, weatherEndpoints } from "./endpoints";
+import { WEATHER_KEY } from "../const/token";
+import { WEATHER_BASE_URL, weatherEndpoints } from "./endpoints";
 
 type APIMap = {
   [key in keyof typeof weatherEndpoints]: (
@@ -19,24 +19,13 @@ const fetchData = async (
   params: any,
   requestOptions?: RequestInit
 ) => {
-  const arr = endpoint.split(" ");
-  const method = arr[0];
-  const endpointStr = arr[1];
-
-  const url = Object.keys(params).reduce(
-    (prev: string, cur: string, index: number) => {
-      if (params[cur])
-        return prev + (index ? "&" : "") + cur + "=" + params[cur];
-      else return prev;
-    },
-    BASE_URL + endpoint + "?"
-  );
+  const url = Object.keys(params).reduce((prev: string, cur: string) => {
+    if (params[cur] && cur !== "map") return prev + `&${cur}=${params[cur]}`;
+    else return prev;
+  }, WEATHER_BASE_URL + endpoint + "?" + `key=${WEATHER_KEY}`);
 
   const options = {
     ...requestOptions,
-    headers: {
-      "Content-Type": "application/json",
-    },
   };
 
   const res = await fetch(url, options);
@@ -52,11 +41,7 @@ const api: any = {};
 
 for (const key in weatherEndpoints) {
   api[key] = (params: any, options: RequestInit) =>
-    fetchData(
-      (weatherEndpoints as any)[key],
-      { ...params, appid: WEATHER_TOKEN },
-      options
-    );
+    fetchData((weatherEndpoints as any)[key], params, options);
 }
 
 export default api as APIMap;

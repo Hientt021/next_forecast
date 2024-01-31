@@ -1,6 +1,6 @@
 "use client";
 
-import { IProgressList } from "@/app/weather/components/AirConditions";
+import { IProgressList } from "@/app/(dashboard)/weather/components/AirConditions";
 import {
   Box,
   Grid,
@@ -16,39 +16,10 @@ interface IProgressStep extends LinearProgressProps {
   steps: IProgressList[];
   value: number;
   gap?: number;
-  isImperial?: boolean;
 }
 
-const EllipseStep = styled(Box)(({ index }: { index: number }) => ({
-  width: "100%",
-  height: 10,
-  // borderRadius: "25px",
-  background: "red",
-  // transform: `rotate(${(index + 1) * (-180 / 5)}deg)`,
-}));
-
 export default function ProgressStep(props: IProgressStep) {
-  const { steps, value, gap = 1, isImperial = false } = props;
-  //   const stepArray = useMemo(() => {
-  //     console.log(value);
-  //     const stepValue = 100 / steps.length;
-  //     let i = 0;
-  //     const arr: number[] = [];
-  //     while (i < steps.length) {
-  //       const currentIndex = Math.floor(value / stepValue);
-  //       const currentValue = value - i * stepValue;
-  //       const progressValue =
-  //         i === currentIndex
-  //           ? (currentValue * 100) / stepValue
-  //           : i < currentIndex
-  //           ? 100
-  //           : 0;
-
-  //       arr.push(progressValue);
-  //       i++;
-  //     }
-  //     return arr;
-  //   }, [value, steps]);
+  const { steps, value, gap = 1 } = props;
 
   const stepArray = useMemo(() => {
     const currentIndex = steps.findIndex(
@@ -61,7 +32,8 @@ export default function ProgressStep(props: IProgressStep) {
         ? 0
         : ((value - el.min) * 100) / (el.max - el.min);
     });
-  }, [value, steps, isImperial]);
+  }, [value, steps]);
+
   return (
     <Grid container spacing={gap}>
       {stepArray.map((el, i) => (

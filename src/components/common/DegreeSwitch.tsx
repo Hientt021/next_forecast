@@ -1,5 +1,5 @@
 "use client";
-import { UNIT } from "@/app/weather/type";
+import { UNIT } from "@/app/(dashboard)/weather/type";
 import { Switch, styled } from "@mui/material";
 import { setUnit } from "../../lib/redux/features/app/appSlice";
 import { useAppDispatch, useAppSelector } from "../../lib/redux/store";

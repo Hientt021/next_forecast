@@ -1,9 +1,5 @@
-export const BASE_URL = "https://api.openweathermap.org";
-
+export const WEATHER_BASE_URL = "https://api.weatherapi.com";
 export const weatherEndpoints = {
-  getTodayForecast: "/data/2.5/weather",
-  getAirQuality: "/data/2.5/air_pollution",
-  getUvIndex: "/data/2.5/uvi",
-  getWeeklyForecast: "/data/2.5/forecast",
-  getCities: "/geo/1.0/direct",
+  getCities: "/v1/search.json",
+  getForecast: "/v1/forecast.json",
 };

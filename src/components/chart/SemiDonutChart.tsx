@@ -1,32 +1,26 @@
 "use client";
-import { Box, Typography, styled } from "@mui/material";
-import { useEffect, useMemo, useRef } from "react";
-import NavigationIcon from "@mui/icons-material/Navigation";
 import {
-  UV_LIST,
+  IProgressList,
   getDescription,
-} from "@/app/weather/components/AirConditions";
+} from "@/app/(dashboard)/weather/components/AirConditions";
 import ApexChart from "./ApexChart";
+import { useMemo } from "react";
+import { Box, Typography } from "@mui/material";
+import NavigationIcon from "@mui/icons-material/Navigation";
+
 interface ISemiDonutChart {
   value: number;
-  max: number;
-  label?: string;
-  list: IChartList[];
-}
-
-interface IChartList {
-  label: string;
-  min: number;
-  max: number;
+  list: IProgressList[];
 }
 
 const SemiDonutChart = (props: ISemiDonutChart) => {
-  const { value, max, label, list } = props;
+  const { value, list } = props;
+  const maxValue = useMemo(() => list[list.length - 1].max, [value, list]);
   const activeIndex = useMemo(() => {
     const index = list.findIndex((el) => el.min < value && el.max >= value);
     return index;
-  }, [value, max, list]);
-  const ref = useRef();
+  }, [value, maxValue, list]);
+
   const options = {
     plotOptions: {
       pie: {
@@ -62,11 +56,11 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
     const selected = list[activeIndex];
     if (selected) {
       const { min, max: selectedMax } = selected;
-      const pointDeg = 180 / max;
+      const pointDeg = 180 / maxValue;
       const currentPoint = (selectedMax + min) / 2;
       return -90 + pointDeg * currentPoint;
     }
-  }, [activeIndex, list, max]);
+  }, [activeIndex, list, maxValue]);
 
   return (
     <Box
@@ -78,9 +72,10 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
             fill: "#1976d2",
           },
           position: "absolute",
-          bottom: 0,
+          bottom: 10,
           left: "50%",
-          rotate: `z ${currentDeg}deg`,
+          transform: "translateX(-50%)",
+          rotate: `${currentDeg}deg`,
         },
         fontSize: "1rem",
       }}
@@ -91,7 +86,6 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
           overflow: "hidden",
           position: "relative",
         }}
-        ref={ref}
       >
         <ApexChart
           height={250}

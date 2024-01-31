@@ -1,4 +1,4 @@
-import { ICurrentForecast } from "@/app/weather/type";
+import { ICurrentForecast } from "@/app/(dashboard)/weather/type";
 import { date } from "../lib/dayjs/date";
 
 export function formatForecastData(data: any) {

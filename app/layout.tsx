@@ -40,12 +40,14 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
           rel="stylesheet"
         />
+        <link rel="stylesheet" href="node_modules/ol/ol.css"></link>
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} style={{ position: "relative" }}>
         <MuiThemeProvider>
           <StoreProvider>
             <SnackProvider>
               <Dimension />
+
               {children}
             </SnackProvider>
           </StoreProvider>
