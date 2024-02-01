@@ -1,29 +1,25 @@
 "use client";
 
 import Map from "ol/Map.js";
-import OSM from "ol/source/OSM.js";
-import TileLayer from "ol/layer/Tile.js";
 import View from "ol/View.js";
-import { Box } from "@mui/material";
+import TileLayer from "ol/layer/Tile.js";
+import OSM from "ol/source/OSM.js";
 import { useEffect, useRef, useState } from "react";
-import XYZ from "ol/source/XYZ.js";
-import api from "@/src/api/api";
 
-const map = new Map({
-  target: "map",
-  layers: [
-    new TileLayer({
-      source: new OSM(),
-    }),
-  ],
-  view: new View({
-    center: [0, 0],
-    zoom: 2,
-  }),
-});
-
-const xyz = new XYZ();
 export default function MapPage() {
+  const mapWrapper = new Map({
+    target: "map",
+    layers: [
+      new TileLayer({
+        source: new OSM(),
+      }),
+    ],
+    view: new View({
+      center: [0, 0],
+      zoom: 2,
+    }),
+  });
+
   const mapTargetElement = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<Map | undefined>();
 
