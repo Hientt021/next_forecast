@@ -45,7 +45,6 @@ export default function MapPage() {
       console.log(...point, zoom);
     });
     setMap(map);
-    api.getCurrentLayer({ map: true });
     return () => map.setTarget("");
   }, []);
 
