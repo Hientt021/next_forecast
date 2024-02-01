@@ -35,7 +35,7 @@ export default function NavBar() {
       px={3}
       py={2}
       sx={{
-        background: mainTheme?.color,
+        background: "transparent",
         display: "flex",
         gap: 2,
         fontWeight: 600,
