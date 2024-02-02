@@ -72,7 +72,7 @@ const SemiDonutChart = (props: ISemiDonutChart) => {
             fill: "#1976d2",
           },
           position: "absolute",
-          bottom: 10,
+          bottom: currentDeg && currentDeg > 0 ? 0 : 10,
           left: "50%",
           transform: "translateX(-50%)",
           rotate: `${currentDeg}deg`,

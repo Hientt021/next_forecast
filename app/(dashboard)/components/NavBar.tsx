@@ -7,6 +7,7 @@ import MapIcon from "@mui/icons-material/Map";
 import HistoryIcon from "@mui/icons-material/History";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import useNavigate from "@/src/hook/useNavigate";
 export const ROUTERS = [
   {
     label: "Weather",
@@ -18,18 +19,17 @@ export const ROUTERS = [
     href: "/map",
     icon: <MapIcon />,
   },
-  {
-    label: "History",
-    href: "/history",
-    icon: <HistoryIcon />,
-  },
+  // {
+  //   label: "History",
+  //   href: "/history",
+  //   icon: <HistoryIcon />,
+  // },
 ];
 
 export default function NavBar() {
   const pathname = usePathname();
-  const mainTheme = GREETING.find(
-    (el) => Number(date().format("HH")) >= el.hour
-  );
+  const { query, onNavigate } = useNavigate();
+
   return (
     <Box
       px={3}
@@ -42,24 +42,32 @@ export default function NavBar() {
       }}
     >
       {ROUTERS.map((el) => (
-        <Link key={el.href} href={el.href}>
-          <Box
-            display="flex"
-            justifyContent={"center"}
-            alignItems={"center"}
-            gap={1}
-            sx={{
-              padding: 1,
-              background: pathname === el.href ? "#E3F1FF" : "transparent",
-              borderRadius: 4,
-              cursor: "pointer",
-              color: pathname === el.href ? "#000" : "#fff",
-            }}
-          >
-            {el.icon}
-            {el.label}
-          </Box>
-        </Link>
+        <Box
+          onClick={() =>
+            onNavigate({
+              pathname: el.href,
+              query: {
+                latitude: query?.latitude,
+                longitude: query?.longitude,
+              },
+            })
+          }
+          key={el.href}
+          display="flex"
+          justifyContent={"center"}
+          alignItems={"center"}
+          gap={1}
+          sx={{
+            padding: 1,
+            background: pathname === el.href ? "#E3F1FF" : "transparent",
+            borderRadius: 4,
+            cursor: "pointer",
+            color: pathname === el.href ? "#000" : "#fff",
+          }}
+        >
+          {el.icon}
+          {el.label}
+        </Box>
       ))}
     </Box>
   );

@@ -6,6 +6,7 @@ import useNavigate from "@/src/hook/useNavigate";
 import PlaceIcon from "@mui/icons-material/Place";
 import { Autocomplete, Box, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import { ICoordinate } from "../page";
 export interface IOptions {
   value: any;
   label: string;
@@ -13,10 +14,12 @@ export interface IOptions {
 
 export interface ICitiesSearch {
   defaultValue?: string;
+  placeholder?: string;
+  onChange?: (newCoordinate: ICoordinate) => void;
 }
 
 export default function CitiesSearch(props: ICitiesSearch) {
-  const { defaultValue = "" } = props;
+  const { defaultValue = "", placeholder = "", onChange } = props;
   const { onQueryChange, query } = useNavigate();
   const [cities, setCities] = useState<any>([]);
   const [value, setValue] = useState<string>(defaultValue);
@@ -54,12 +57,16 @@ export default function CitiesSearch(props: ICitiesSearch) {
         value={value}
         onChange={(event: any, newValue: string) => {
           const selected = cities.find((el: any) => el.name === newValue);
-          if (selected) setValue(newValue);
-          onQueryChange({
-            ...query,
-            latitude: selected?.lat,
-            longitude: selected?.lon,
-          });
+          if (selected) {
+            setValue(newValue);
+            onQueryChange({
+              ...query,
+              latitude: selected.lat,
+              longitude: selected.lon,
+            });
+            onChange &&
+              onChange({ latitude: selected.lat, longitude: selected.lon });
+          }
         }}
         inputValue={inputValue}
         onInputChange={(event, newInputValue) => {
@@ -79,6 +86,7 @@ export default function CitiesSearch(props: ICitiesSearch) {
         renderInput={(params) => (
           <TextField
             {...params}
+            placeholder={placeholder}
             onClick={() => value && getCitiesData(value)}
             InputProps={{
               ...params.InputProps,

@@ -20,10 +20,11 @@ import useDate from "@/src/hook/useDate";
 interface IHourForecastSider {
   data: IHourForecast;
   city?: string;
+  onCoordinateChange: (value: ICoordinate) => void;
 }
 
 export default function ForecastSider(props: IHourForecastSider) {
-  const { data, city = "" } = props;
+  const { data, city = "", onCoordinateChange } = props;
   const { isIpad, isMobileDevice } = useAppSelector(
     (state) => state.app.device
   );
@@ -49,7 +50,7 @@ export default function ForecastSider(props: IHourForecastSider) {
           alignItems={"center"}
           width={"100%"}
         >
-          <CitiesSearch defaultValue={city} />
+          <CitiesSearch onChange={onCoordinateChange} defaultValue={city} />
           {query?.latitude && query?.longitude && <DegreeSwitch />}
         </Box>
 

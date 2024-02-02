@@ -35,8 +35,7 @@ export default function WeatherPage() {
 
   const init = async () => {
     try {
-      if (query?.latitude && query?.longitude) await fetchData(query);
-      else if (navigator.geolocation) {
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           onAllowedAccessLocation,
           onDeniedAccessLocation
@@ -50,9 +49,9 @@ export default function WeatherPage() {
     }
   };
 
-  const fetchData = async (userCoordinate: ICoordinate) => {
+  const fetchData = async (coordinate: ICoordinate) => {
     try {
-      const forecastRes = await getForecast(userCoordinate);
+      const forecastRes = await getForecast(coordinate);
       if (forecastRes) {
         dispatch(setLocation(forecastRes.location));
         dispatch(setCurrent(forecastRes.current));
@@ -60,6 +59,7 @@ export default function WeatherPage() {
         const weekly = await formatDayList(forecastRes);
         setWeeklyList(weekly);
         setData(forecastRes);
+
         console.log(forecastRes);
       }
     } catch (error: any) {
@@ -92,7 +92,10 @@ export default function WeatherPage() {
     dispatch(setAllowAccessLocation(true));
     const latitude = location.coords.latitude.toString();
     const longitude = location.coords.longitude.toString();
-    if (latitude && longitude) onQueryChange({ ...query, latitude, longitude });
+    if (latitude && longitude) {
+      onQueryChange({ ...query, latitude, longitude });
+      fetchData({ latitude, longitude });
+    }
   };
 
   const onDeniedAccessLocation = async (error: GeolocationPositionError) => {
@@ -102,7 +105,7 @@ export default function WeatherPage() {
 
   useEffect(() => {
     init();
-  }, [query?.latitude, query?.longitude, currentDt]);
+  }, []);
 
   const selectedForecast = useMemo(() => {
     const hours = weeklyList.find((el) =>
@@ -140,7 +143,11 @@ export default function WeatherPage() {
             justifyContent: "space-between",
           }}
         >
-          <ForecastSider data={selectedForecast!!} city={data?.location.name} />
+          <ForecastSider
+            data={selectedForecast!!}
+            city={data?.location.name}
+            onCoordinateChange={fetchData}
+          />
         </Loader>
       </Grid>
       <Grid
