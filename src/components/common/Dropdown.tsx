@@ -39,7 +39,7 @@ export default function Dropdown(props: IDropdown) {
         {options.map((el, i) => (
           <MenuItem
             onClick={(e: any) => {
-              const str = el.value;
+              const str = el.value === value ? "" : el.value;
               onValueChange && onValueChange(str);
               setValue(str);
               onClose();
