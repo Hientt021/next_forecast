@@ -7,7 +7,7 @@ type IStyledBox = {
   isDesktop?: boolean;
 };
 type IStyledWrapper = IStyledBox & { loading?: boolean };
-type IStyledScrollable = IStyledBox & GridProps;
+type IStyledScrollable = IStyledBox;
 
 export const StyledWrapper = styled(Box)(
   ({ isMobile, isIpad }: IStyledWrapper) => ({
@@ -16,14 +16,14 @@ export const StyledWrapper = styled(Box)(
   })
 );
 
-export const Scrollable = styled(Grid)(
+export const Scrollable = styled(Box)(
   ({ isMobile, isIpad, isDesktop, ...rest }: IStyledScrollable) => ({
     overflow: "auto",
-    height: "calc(100% - 50px)",
-
     paddingRight: "0.5rem",
+    paddingBottom: "0.5rem",
     "::-webkit-scrollbar": {
       width: "6px",
+      height: "6px",
       paddingLeft: "6px",
       backgroundColor: "#F5F5F5",
       borderRadius: "25px",

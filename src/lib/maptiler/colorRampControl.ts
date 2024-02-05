@@ -1,5 +1,6 @@
 import { Map } from "@maptiler/sdk";
 
+export const COLOR_RAMP_CLASS = "maplibregl-ctrl-color-ramp";
 export default class colorRampLegendControl {
   public _options;
   public _container = document.createElement("div");
@@ -9,29 +10,46 @@ export default class colorRampLegendControl {
 
   constructor(options: any) {
     this._options = { ...options };
-    this._container.classList.add("maplibregl-ctrl");
-    this._container.classList.add("maplibregl-ctrl-color-ramp");
+    this._container.classList.add(COLOR_RAMP_CLASS);
   }
   onAdd(map: Map) {
     this._map = map;
     const colorramp = this._options.colorRamp;
     const canvas = colorramp.getCanvasStrip();
     canvas.style.height = "30px";
-    canvas.style.width = "500px";
+    canvas.style.width = "300px";
+    canvas.style.marginLeft = "30px";
+    canvas.style.marginBottom = "30px";
     canvas.style.border = "1px dashed #00000059";
 
-    const bounds = colorramp.getBounds();
+    const getColorRamp = () => {
+      const maxLength = 9;
+      const bounds = colorramp.getBounds();
+      const boundRange = bounds.max - bounds.min;
+      const boundValue = boundRange / maxLength;
+      const result = [];
+      for (let i = 0; i < maxLength; i++) {
+        const value = !i
+          ? bounds.min
+          : i === maxLength - 1
+          ? bounds.max
+          : Math.round(bounds.min + i * boundValue);
+        result.push({ value });
+      }
+    };
+
+    const colors = colorramp.length <= 9 ? colorramp : getColorRamp();
 
     const desc = document.createElement("div");
-    for (let i = 0; i < colorramp.length; i++) {
-      const value = colorramp[i]?.value;
-
+    colors.forEach((el: any) => {
       const span = document.createElement("span");
-      span.innerHTML = value;
+      span.innerHTML = el.value;
       desc.appendChild(span);
-    }
+    });
 
     desc.style.display = "flex";
+    desc.style.marginLeft = "30px";
+
     desc.style.justifyContent = "space-between";
 
     desc.classList.add("color-ramp-label");

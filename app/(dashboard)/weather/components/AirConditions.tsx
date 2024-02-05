@@ -155,7 +155,7 @@ export default function AirConditions(props: IAirConditions) {
             <Stack>
               <Typography className="step-label">{el.label}</Typography>
               <Typography fontWeight={600} fontSize={"1.125rem"}>
-                {el.render(currentData)}
+                {el.mobileRender(currentData)}
               </Typography>
             </Stack>
           </Grid>

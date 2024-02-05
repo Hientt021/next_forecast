@@ -9,9 +9,11 @@ import { MouseEventHandler, useRef, useState } from "react";
 
 interface IDropdown {
   options: IOption[];
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   label?: string;
   onValueChange?: (value: string) => void;
+  value: string;
+  children?: React.ReactNode;
 }
 
 export interface IOption {
@@ -20,8 +22,14 @@ export interface IOption {
   value: string;
 }
 export default function Dropdown(props: IDropdown) {
-  const { label = "", icon, options, onValueChange } = props;
-  const [value, setValue] = useState("");
+  const {
+    value,
+    label = "",
+    icon = <></>,
+    options,
+    onValueChange,
+    children = <></>,
+  } = props;
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
   const open = Boolean(anchor);
   const onOpen = (e: any) => setAnchor(e.currentTarget);
@@ -41,7 +49,6 @@ export default function Dropdown(props: IDropdown) {
             onClick={(e: any) => {
               const str = el.value === value ? "" : el.value;
               onValueChange && onValueChange(str);
-              setValue(str);
               onClose();
             }}
             selected={value === el.value}
@@ -57,6 +64,7 @@ export default function Dropdown(props: IDropdown) {
       <Tooltip title={label}>
         <IconButton onClick={onOpen} size="small" sx={{ ml: 2 }}>
           {icon}
+          {children}
         </IconButton>
       </Tooltip>
     </>

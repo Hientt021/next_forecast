@@ -57,7 +57,7 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
     return <EmptyLocation className={isMobileDevice ? "wrapper" : ""} />;
 
   return (
-    <Grid container spacing={1} height="100%">
+    <Grid container spacing={1}>
       {!isMobileDevice && (
         <Grid item desktop={12} mb={1}>
           <Typography variant="h5" fontWeight={600}>
@@ -71,18 +71,18 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
           </Typography>
         </Grid>
       )}
-
-      <Scrollable
+      <Grid
         item
         tablet={12}
         laptop={9}
         desktop={10}
         pb={isMobileDevice ? 10 : 0}
+        sx={{ overflow: "hidden" }}
       >
-        {renderToday}
-      </Scrollable>
+        <Scrollable>{renderToday}</Scrollable>
+      </Grid>
 
-      <Scrollable
+      <Grid
         item
         tablet={12}
         laptop={3}
@@ -90,17 +90,20 @@ export default function WeeklyForecast(props: IWeeklyForecast) {
         pb={isMobileDevice ? 10 : 0}
         sx={{
           paddingRight: 1,
+          overflow: "hidden",
         }}
       >
-        {!isMobileDevice && renderWeekly}
-        <Drawer
-          open={openDrawer}
-          onClose={() => setOpenDrawer(false)}
-          anchor="bottom"
-        >
-          {renderWeekly}
-        </Drawer>
-      </Scrollable>
+        <Scrollable>
+          {!isMobileDevice && renderWeekly}
+          <Drawer
+            open={openDrawer}
+            onClose={() => setOpenDrawer(false)}
+            anchor="bottom"
+          >
+            {renderWeekly}
+          </Drawer>
+        </Scrollable>
+      </Grid>
     </Grid>
   );
 }

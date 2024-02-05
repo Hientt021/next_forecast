@@ -23,6 +23,7 @@ export default function WeatherLayout(props: { children: React.ReactNode }) {
         background: mainTheme?.color,
         color: "#0A0A0B",
         fontFamily: "'Roboto', sans-serif;",
+        height: "100vh",
       }}
     >
       <NavBar />

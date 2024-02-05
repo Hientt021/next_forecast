@@ -46,6 +46,7 @@ const useNavigate = () => {
 
   return {
     query,
+    pathname,
     createSearchParams,
     onNavigate,
     onQueryChange,

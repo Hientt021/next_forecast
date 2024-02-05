@@ -67,8 +67,8 @@ export default function ForecastSider(props: IHourForecastSider) {
 
       <Box
         display="flex"
-        flexDirection={isIpad ? "row" : "column"}
-        gap={!isIpad ? 5 : 2}
+        flexDirection={isMobileDevice ? "row" : "column"}
+        gap={!isMobileDevice ? 5 : 2}
         justifyContent={"center"}
         alignItems={"center"}
         mt={3}

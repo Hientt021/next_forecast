@@ -119,7 +119,7 @@ export default function WeatherPage() {
   }, [query?.dt, weeklyList]);
 
   return (
-    <Grid container height={"100%"} pr={2}>
+    <Grid container pr={isMobileDevice ? 0 : 2}>
       <Grid
         item
         mobile={12}
@@ -130,17 +130,16 @@ export default function WeatherPage() {
           p: isMobileDevice ? 2 : 5,
           position: "relative",
           pt: 1,
-          height: "100%",
         }}
       >
         <Loader
           loading={!(selectedForecast && data)}
-          height="100%"
           sx={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "space-between",
+            width: "100%",
           }}
         >
           <ForecastSider
@@ -163,7 +162,7 @@ export default function WeatherPage() {
           zIndex: 2,
         }}
       >
-        <Loader loading={!(isInitial && !!weeklyList.length)} height="100%">
+        <Loader loading={!(isInitial && !!weeklyList.length)}>
           <WeeklyForecast weeklyList={weeklyList} />
         </Loader>
       </Grid>

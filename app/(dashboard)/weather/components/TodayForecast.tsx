@@ -9,6 +9,11 @@ import { Box, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IHourForecast } from "../type";
 import AirConditions from "./AirConditions";
+import useUnit from "@/src/hook/useUnit";
+import IconComponent from "@/src/components/icons";
+import WeatherIcon from "@/src/components/icons/WeatherIcon";
+import { date } from "@/src/lib/dayjs/date";
+import { Scrollable } from "../styled";
 
 interface ITodayForecast {
   currentList: IHourForecast[];
@@ -18,6 +23,7 @@ interface ITodayForecast {
 export default function TodayForecast(props: ITodayForecast) {
   const { currentList, onOpen } = props;
   const { query, onQueryChange } = useNavigate();
+  const { formatTemp } = useUnit();
   const [active, setActive] = useState(0);
   const { isMobile, isMobileDevice } = useAppSelector(
     (state) => state.app.device
@@ -65,7 +71,7 @@ export default function TodayForecast(props: ITodayForecast) {
           <ArrowRightRounded />
         </Typography>
       </Box>
-      <Box display="flex" overflow={"auto"} gap={3}>
+      <Scrollable display="flex" gap={3}>
         {currentList?.map((el, i) => (
           <Stack
             key={i}
@@ -80,22 +86,27 @@ export default function TodayForecast(props: ITodayForecast) {
             alignItems={"center"}
             gap={1}
           >
-            {/* <Typography fontWeight={600}>{formatTemp(el.temp)}</Typography>
-            <IconComponent name={el.icon} size={24} />
             <Typography fontWeight={600}>
-              {currentData?.dt === el.dt
+              {formatTemp(el, "temp", { unit: true })}
+            </Typography>
+            <WeatherIcon
+              code={currentList?.[active]?.condition.code}
+              size={60}
+            />
+            <Typography fontWeight={600}>
+              {currentList?.[active]?.time_epoch === el.time_epoch
                 ? "Now"
-                : date.unix(el.dt).format("HH:mm")}
-            </Typography> */}
+                : date.unix(el.time_epoch).format("HH:mm")}
+            </Typography>
           </Stack>
         ))}
-      </Box>
+      </Scrollable>
     </>
   );
 
   return (
     <Loader loading={!currentList}>
-      <Stack mt={!isMobileDevice ? 0 : 2} gap={!isMobileDevice ? 0 : 2}>
+      <Stack gap={!isMobileDevice ? 0 : 2}>
         {renderChart}
         <AirConditions currentData={currentList?.[active]} />
         {renderTodayList}

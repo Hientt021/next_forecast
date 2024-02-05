@@ -8,28 +8,38 @@ import HistoryIcon from "@mui/icons-material/History";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import useNavigate from "@/src/hook/useNavigate";
+import { useAppSelector } from "@/src/lib/redux/store";
+import MenuIcon from "@mui/icons-material/Menu";
+import Dropdown, { IOption } from "@/src/components/common/Dropdown";
 export const ROUTERS = [
   {
     label: "Weather",
-    href: "/weather",
+    value: "/weather",
     icon: <AirIcon />,
   },
   {
     label: "Map",
-    href: "/map",
+    value: "/map",
     icon: <MapIcon />,
   },
   // {
   //   label: "History",
-  //   href: "/history",
+  //   value: "/history",
   //   icon: <HistoryIcon />,
   // },
 ];
 
 export default function NavBar() {
-  const pathname = usePathname();
-  const { query, onNavigate } = useNavigate();
-
+  const { query, onNavigate, pathname } = useNavigate();
+  const { isMobileDevice } = useAppSelector((state) => state.app.device);
+  const onNavClick = (value: string) =>
+    onNavigate({
+      pathname: value,
+      query: {
+        latitude: query?.latitude,
+        longitude: query?.longitude,
+      },
+    });
   return (
     <Box
       px={3}
@@ -37,38 +47,42 @@ export default function NavBar() {
       sx={{
         background: "transparent",
         display: "flex",
+        justifyContent: isMobileDevice ? "flex-end" : "flex-start",
         gap: 2,
         fontWeight: 600,
       }}
     >
-      {ROUTERS.map((el) => (
-        <Box
-          onClick={() =>
-            onNavigate({
-              pathname: el.href,
-              query: {
-                latitude: query?.latitude,
-                longitude: query?.longitude,
-              },
-            })
-          }
-          key={el.href}
-          display="flex"
-          justifyContent={"center"}
-          alignItems={"center"}
-          gap={1}
-          sx={{
-            padding: 1,
-            background: pathname === el.href ? "#E3F1FF" : "transparent",
-            borderRadius: 4,
-            cursor: "pointer",
-            color: pathname === el.href ? "#000" : "#fff",
-          }}
+      {isMobileDevice ? (
+        <Dropdown
+          label=""
+          options={ROUTERS}
+          value={pathname}
+          onValueChange={onNavClick}
         >
-          {el.icon}
-          {el.label}
-        </Box>
-      ))}
+          <MenuIcon sx={{ color: "white" }} />
+        </Dropdown>
+      ) : (
+        ROUTERS.map((el) => (
+          <Box
+            onClick={() => onNavClick(el.value)}
+            key={el.value}
+            display="flex"
+            justifyContent={"center"}
+            alignItems={"center"}
+            gap={1}
+            sx={{
+              padding: 1,
+              background: pathname === el.value ? "#E3F1FF" : "transparent",
+              borderRadius: 4,
+              cursor: "pointer",
+              color: pathname === el.value ? "#000" : "#fff",
+            }}
+          >
+            {el.icon}
+            {el.label}
+          </Box>
+        ))
+      )}
     </Box>
   );
 }
