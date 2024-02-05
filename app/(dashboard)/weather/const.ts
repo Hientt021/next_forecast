@@ -59,7 +59,7 @@ export const UV_LIST = [
 
 export const OUTDOOR_TEMPERATURE = [
   {
-    max: 37,
+    max: 50,
     min: 32,
     label: "Heat Wave",
     color: "#D10A04",

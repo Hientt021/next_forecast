@@ -36,6 +36,7 @@ export default class colorRampLegendControl {
           : Math.round(bounds.min + i * boundValue);
         result.push({ value });
       }
+      return result;
     };
 
     const colors = colorramp.length <= 9 ? colorramp : getColorRamp();
