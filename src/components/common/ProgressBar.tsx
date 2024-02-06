@@ -5,6 +5,7 @@ import NavigationIcon from "@mui/icons-material/Navigation";
 import ApexChart from "../chart/ApexChart";
 import useUnit from "@/src/hook/useUnit";
 import { UNIT } from "@/app/(dashboard)/weather/type";
+import { WIND_UNIT } from "@/src/const/unit";
 
 interface IProgressBar {
   value: number;
@@ -14,14 +15,16 @@ const speedBar = [5, 10, 20, 30, 40];
 
 const ProgressBar = (props: IProgressBar) => {
   const { value } = props;
-  const { convertSpeed, speedUnit, formatTemp, formatSpeed, unit } = useUnit();
-
+  const { convertSpeed, formatTemp, formatSpeed, unit } = useUnit();
+  const { wind } = unit;
   const values = useMemo(
     () =>
       speedBar.map((el) =>
-        unit === UNIT.METRIC ? el : convertSpeed(el, UNIT.IMPERIAL)
+        wind === WIND_UNIT.KILOMETER_PER_HOUR
+          ? el
+          : convertSpeed(el, WIND_UNIT.METER_PER_SECOND)
       ),
-    [unit]
+    [wind]
   );
   const options = {
     chart: {

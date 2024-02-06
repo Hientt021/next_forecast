@@ -3,6 +3,7 @@ import { GREETING } from "./weather/const";
 import { date } from "@/src/lib/dayjs/date";
 import { Metadata } from "next";
 import dynamic from "next/dynamic";
+import { useAppSelector } from "@/src/lib/redux/store";
 
 export const metadata: Metadata = {
   title: "Ted's Forecast - Weather",
@@ -24,10 +25,11 @@ export default function WeatherLayout(props: { children: React.ReactNode }) {
         color: "#0A0A0B",
         fontFamily: "'Roboto', sans-serif;",
         height: "100vh",
+        overflow: "hidden",
       }}
     >
       <NavBar />
-      <Box height={"calc(100vh - 72px)"}>{props.children}</Box>
+      <Box height={`calc(100% - 74px)`}>{props.children}</Box>
     </Box>
   );
 }

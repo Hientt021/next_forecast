@@ -1,5 +1,12 @@
 import { ICoordinate } from "@/app/(dashboard)/weather/page";
 import { IHourForecast, ILocation } from "@/app/(dashboard)/weather/type";
+import {
+  PRECIPITATION_UNIT,
+  PRESSURE_UNIT,
+  RADAR_UNIT,
+  TEMPERATURE_UNIT,
+  WIND_UNIT,
+} from "@/src/const/unit";
 import { IMessageType } from "@/src/hook/useAlert";
 import { createSlice } from "@reduxjs/toolkit";
 
@@ -9,7 +16,7 @@ interface IMessage {
   autoClose?: boolean;
 }
 interface IAppSlice {
-  unit: string;
+  unit: IUnit;
   device: {
     name: string;
     isMobile: boolean;
@@ -24,8 +31,24 @@ interface IAppSlice {
   location?: ILocation;
 }
 
+interface IUnit {
+  temperature: string;
+  precipitation: string;
+  pressure: string;
+  radar: string;
+  wind: string;
+}
+
+const defaultUnit = {
+  temperature: TEMPERATURE_UNIT.CELSIUS,
+  precipitation: PRECIPITATION_UNIT.MILLILITER_PER_HOUR,
+  pressure: PRESSURE_UNIT.HECTOR_PASCAL,
+  radar: RADAR_UNIT.METEOROLOGY,
+  wind: WIND_UNIT.METER_PER_SECOND,
+};
+
 const initialState: IAppSlice = {
-  unit: "metric",
+  unit: defaultUnit,
   location: undefined,
   device: {
     name: "",
@@ -45,7 +68,10 @@ export const appSlice = createSlice({
   initialState,
   reducers: {
     setUnit: (state, action) => {
-      state.unit = action.payload;
+      state.unit = {
+        ...state.unit,
+        [action.payload.type]: action.payload.value,
+      };
     },
     setDevice: (state, action) => {
       state.device = action.payload;

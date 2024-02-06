@@ -1,68 +1,52 @@
 import { useSelector } from "react-redux";
 import { useAppSelector } from "../lib/redux/store";
-import {
-  IDayForecast,
-  IHourForecast,
-  UNIT,
-} from "@/app/(dashboard)/weather/type";
+import { IDayForecast, IHourForecast } from "@/app/(dashboard)/weather/type";
 import { useMemo } from "react";
+import { TEMPERATURE_UNIT, WIND_UNIT } from "../const/unit";
 
 export type IUnitKey = "avgtemp" | "temp" | "feelslike";
 export type IUnitValue = Partial<IDayForecast & IHourForecast>;
 export type IUnitOptions = { unit?: boolean };
 
 const useUnit = () => {
-  const { unit } = useAppSelector((state) => state.app);
-  const tempUnit = useMemo(() => (unit === UNIT.METRIC ? "°C" : "°F"), [unit]);
-  const speedUnit = useMemo(
-    () => (unit === UNIT.METRIC ? "m/s" : "km/h"),
-    [unit]
-  );
-  const formatTemp = (
-    value: IUnitValue,
-    key: IUnitKey,
-    options?: IUnitOptions
-  ) => {
-    const isUnit = options?.unit;
-    if (!value) return isUnit ? "" : 0;
-    switch (unit) {
-      case UNIT.METRIC: {
-        return isUnit
-          ? value[(key + "_c") as keyof IUnitValue] + "°C"
-          : (value[(key + "_c") as keyof IUnitValue] as number);
-      }
-      case UNIT.IMPERIAL: {
-        return isUnit
-          ? value[(key + "_f") as keyof IUnitValue] + "°F"
-          : (value[(key + "_f") as keyof IUnitValue] as number);
-      }
-      default:
-        return isUnit ? "" : 0;
-    }
-  };
+  const unit = useAppSelector((state) => state.app.unit);
+  const { temperature, wind } = unit;
 
-  const formatSpeed = (value: IUnitValue, options?: IUnitOptions) => {
-    const isUnit = options?.unit;
-    if (!value) return isUnit ? "" : 0;
-    switch (unit) {
-      case UNIT.METRIC: {
-        return isUnit ? value.wind_mph + "m/s" : value.wind_mph;
-      }
-      case UNIT.IMPERIAL: {
-        return isUnit ? value.wind_kph + "km/h" : value.wind_kph;
-      }
-      default:
-        return isUnit ? "" : 0;
-    }
-  };
-
-  const convertSpeed = (value: number, toUnit?: UNIT) => {
+  const formatTemp = (value: IUnitValue, key: IUnitKey) => {
     if (!value) return 0;
-    switch (toUnit || unit) {
-      case UNIT.METRIC: {
+    switch (temperature) {
+      case TEMPERATURE_UNIT.CELSIUS: {
+        return value[(key + "_c") as keyof IUnitValue];
+      }
+      case TEMPERATURE_UNIT.FAHRENHEIT: {
+        return value[(key + "_f") as keyof IUnitValue];
+      }
+      default:
+        return 0;
+    }
+  };
+
+  const formatSpeed = (value: IUnitValue) => {
+    if (!value) return 0;
+    switch (wind) {
+      case WIND_UNIT.METER_PER_SECOND: {
+        return value.wind_mph;
+      }
+      case WIND_UNIT.KILOMETER_PER_HOUR: {
+        return value.wind_kph;
+      }
+      default:
+        return 0;
+    }
+  };
+
+  const convertSpeed = (value: number, toUnit: string) => {
+    if (!value) return 0;
+    switch (toUnit) {
+      case WIND_UNIT.METER_PER_SECOND: {
         return value / 1.6;
       }
-      case UNIT.IMPERIAL: {
+      case WIND_UNIT.KILOMETER_PER_HOUR: {
         return value * 1.6;
       }
       default:
@@ -70,12 +54,12 @@ const useUnit = () => {
     }
   };
 
-  const convertTemper = (value: number, toUnit?: UNIT) => {
-    switch (toUnit || unit) {
-      case UNIT.METRIC: {
+  const convertTemper = (value: number, toUnit: string) => {
+    switch (toUnit) {
+      case TEMPERATURE_UNIT.CELSIUS: {
         return (value - 32) * (5 / 9);
       }
-      case UNIT.IMPERIAL: {
+      case TEMPERATURE_UNIT.FAHRENHEIT: {
         return value * (9 / 5) + 32;
       }
       default:
@@ -83,13 +67,13 @@ const useUnit = () => {
     }
   };
 
+  const handleTemperatureUnitChange = (newUnit: string) => {};
+
   return {
     unit,
     formatTemp,
     formatSpeed,
-    tempUnit,
     convertTemper,
-    speedUnit,
     convertSpeed,
   };
 };

@@ -12,6 +12,7 @@ import useUnit from "@/src/hook/useUnit";
 import useNavigate from "@/src/hook/useNavigate";
 import { useAppSelector } from "@/src/lib/redux/store";
 import useDate from "@/src/hook/useDate";
+import { TEMPERATURE_UNIT } from "@/src/const/unit";
 
 interface IDailyForecastChart {
   data: IHourForecast[];
@@ -119,7 +120,7 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
       custom: ({ series, seriesIndex, dataPointIndex, w }: any) => {
         const current = data[dataPointIndex];
         const hour = formatByTimezone(current.time_epoch, "HH:mm");
-        const temp = formatTemp(current, "temp", { unit: true });
+        const temp = formatTemp(current, "temp") + unit.temperature;
 
         return (
           '<div class="custom-tooltip">' +
@@ -137,7 +138,9 @@ export default function DailyForecastChart(props: IDailyForecastChart) {
   const series = [
     {
       name: location?.name + " Temperature",
-      data: data.map((el, i) => (unit === UNIT.METRIC ? el.temp_c : el.temp_f)),
+      data: data.map((el, i) =>
+        unit.temperature === TEMPERATURE_UNIT.CELSIUS ? el.temp_c : el.temp_f
+      ),
     },
   ];
   return (

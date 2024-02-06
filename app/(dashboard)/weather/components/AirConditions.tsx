@@ -21,6 +21,7 @@ import {
 } from "../const";
 import { IHourForecast, UNIT } from "../type";
 import ChartWrapper from "./ChartWrapper";
+import { WIND_UNIT } from "@/src/const/unit";
 interface IAirConditions {
   currentData: IHourForecast;
 }
@@ -39,7 +40,8 @@ export const getDescription = (value: number, list: IProgressList[]) => {
 export default function AirConditions(props: IAirConditions) {
   const { currentData } = props;
   const { isMobileDevice } = useAppSelector((state) => state.app.device);
-  const { convertSpeed, speedUnit, formatTemp, formatSpeed, unit } = useUnit();
+  const { convertSpeed, formatTemp, formatSpeed, unit } = useUnit();
+  const { wind } = unit;
   const contents = [
     {
       label: "Humidity",
@@ -59,17 +61,20 @@ export default function AirConditions(props: IAirConditions) {
     {
       label: "Wind",
       key: "wind",
-      mobileRender: (value: IHourForecast) =>
-        formatSpeed(value, { unit: true }),
+      mobileRender: (value: IHourForecast) => formatSpeed(value),
       icon: <AirIcon />,
       render: (value: IHourForecast) => {
         const speed = formatSpeed(value) as number;
         return (
           <ChartWrapper
             value={speed}
-            unitSymbol={speedUnit}
+            unitSymbol={wind}
             min={0}
-            max={unit === UNIT.METRIC ? 40 : convertSpeed(40, UNIT.IMPERIAL)}
+            max={
+              wind === WIND_UNIT.KILOMETER_PER_HOUR
+                ? 40
+                : convertSpeed(40, WIND_UNIT.METER_PER_SECOND)
+            }
           >
             <ProgressBar value={speed} />
           </ChartWrapper>
@@ -81,10 +86,10 @@ export default function AirConditions(props: IAirConditions) {
       key: "feels_like",
       unit: "°C",
       icon: <ThermostatIcon />,
-      mobileRender: (value: IHourForecast) =>
-        formatTemp(value, "feelslike", { unit: true }),
+      mobileRender: (value: IHourForecast) => formatTemp(value, "feelslike"),
       render: (value: IHourForecast) => {
         const temp = formatTemp(value, "feelslike") as number;
+        console.log(temp);
         return <TemperatureBar value={temp} />;
       },
     },
@@ -155,7 +160,7 @@ export default function AirConditions(props: IAirConditions) {
             <Stack>
               <Typography className="step-label">{el.label}</Typography>
               <Typography fontWeight={600} fontSize={"1.125rem"}>
-                {el.mobileRender(currentData)}
+                {el.mobileRender(currentData) as any}
               </Typography>
             </Stack>
           </Grid>
@@ -199,9 +204,7 @@ export default function AirConditions(props: IAirConditions) {
               {renderIcon(el.icon)}
             </Box>
             <Box height={120} overflow={"hidden"} position={"relative"}>
-              {isMobileDevice
-                ? el.mobileRender(currentData)
-                : el.render(currentData)}
+              {el.render(currentData)}
             </Box>
           </CardComponent>
         </Grid>

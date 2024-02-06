@@ -13,9 +13,25 @@ import SnowDayIcon from "./SnowDayIcon";
 import SnowNightIcon from "./SnowNightIcon";
 import MistDayIcon from "./MistDayIcon";
 import MistNightIcon from "./MistNightIcon";
+import ThermostatIcon from "@mui/icons-material/Thermostat";
+import ThunderstormIcon from "@mui/icons-material/Thunderstorm";
+import SpeedIcon from "@mui/icons-material/Speed";
+import RadarIcon from "@mui/icons-material/Radar";
+import AirIcon from "@mui/icons-material/Air";
+import WaterDropIcon from "@mui/icons-material/WaterDrop";
+import ScaleIcon from "@mui/icons-material/Scale";
+import MapIcon from "@mui/icons-material/Map";
 
 const icons: { [key: string]: (props: IIconComponent) => React.ReactNode } = {
   ["city"]: (props) => <CityBuilding {...props} />,
+  ["temperature"]: (props: any) => <ThermostatIcon {...props} />,
+  ["precipitation"]: (props: any) => <ThunderstormIcon {...props} />,
+  ["pressure"]: (props: any) => <ScaleIcon {...props} />,
+  ["radar"]: (props: any) => <RadarIcon {...props} />,
+  ["wind"]: (props: any) => <SpeedIcon {...props} />,
+  ["humidity"]: (props: any) => <WaterDropIcon {...props} />,
+  ["weather"]: (props: any) => <AirIcon {...props} />,
+  ["map"]: (props: any) => <MapIcon {...props} />,
 
   ["01d"]: (props) => <ClearSkyDayIcon {...props} />,
   ["01n"]: (props) => <ClearSkyNightIcon {...props} />,

@@ -25,51 +25,46 @@ import LayersIcon from "@mui/icons-material/Layers";
 import RadarIcon from "@mui/icons-material/Radar";
 import SpeedIcon from "@mui/icons-material/Speed";
 import ThunderstormIcon from "@mui/icons-material/Thunderstorm";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CitiesSearch from "../weather/components/CitiesSearch";
 import { ICoordinate } from "../weather/page";
 import { useAppSelector } from "@/src/lib/redux/store";
+import useUnit from "@/src/hook/useUnit";
+import { TEMPERATURE_UNIT, WIND_UNIT } from "@/src/const/unit";
 
 config.apiKey = MAP_KEY;
-
 const layers = [
   {
     value: "precipitation",
     label: "Precipitation",
     icon: <ThunderstormIcon />,
     colorRamp: ColorRamp.builtin.PRECIPITATION,
-    unit: "mm",
   },
   {
     value: "pressure",
     label: "Pressure",
     icon: <SpeedIcon />,
     colorRamp: ColorRamp.builtin.PRESSURE_2,
-    unit: "hPa",
   },
   {
     value: "temperature",
     label: "Temperature",
     icon: <DeviceThermostatIcon />,
     colorRamp: ColorRamp.builtin.TEMPERATURE_3,
-    unit: "dBZ",
   },
   {
     value: "radar",
     label: "Radar",
     icon: <RadarIcon />,
     colorRamp: ColorRamp.builtin.RADAR,
-    unit: "°",
   },
   {
     value: "wind",
     label: "Wind",
     icon: <AirIcon />,
     colorRamp: ColorRamp.builtin.WIND_ROCKET,
-    unit: "m/s",
   },
 ];
-
 export default function MapPage() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const { isMobileDevice } = useAppSelector((state) => state.app.device);
@@ -77,6 +72,8 @@ export default function MapPage() {
   const [layer, setLayer] = useState("");
 
   const { query } = useNavigate();
+  const { unit, convertTemper, convertSpeed } = useUnit();
+  const { temperature, wind } = unit;
 
   const onCoordinateChange = (coordinate: ICoordinate) => {
     const { latitude, longitude } = coordinate;
@@ -104,7 +101,6 @@ export default function MapPage() {
   const showNewLayer = (value: string) => {
     if (!map) return;
     const alreadyExist = !!map.getLayer(value);
-    const selectedLayer = layers.find((el) => el.value === value);
 
     if (alreadyExist) map.setLayoutProperty(value, "visibility", "visibility");
     else {
@@ -113,19 +109,18 @@ export default function MapPage() {
         map.addLayer(newLayer, "Water");
       }
     }
+    const selectedLayer = layers.find((el) => el.value === value);
+    const colorValue = getColorRamp(selectedLayer?.colorRamp);
+
     const newControl = new colorRampLegendControl({
       colorRamp: selectedLayer?.colorRamp,
+      colorValue: colorValue,
+      unit: unit[selectedLayer?.value as keyof typeof unit],
     });
 
     map.addControl(newControl, "bottom-left");
-    const colorRamp = document.getElementsByClassName("color-ramp-label")[0];
-    if (colorRamp) {
-      const unit = document.createElement("span");
-      if (unit) {
-        unit.innerHTML = selectedLayer?.unit || "";
-        colorRamp.appendChild(unit);
-      }
-    }
+
+    console.log(selectedLayer?.colorRamp.getRawColorStops());
   };
 
   const removeColorRamp = () => {
@@ -133,6 +128,24 @@ export default function MapPage() {
 
     const parent = colorRamp.parentNode;
     parent?.removeChild(colorRamp);
+  };
+
+  const getColorRamp = (colorRamp: any) => {
+    const maxLength = 9;
+    const min = convertUnitValue(colorRamp.getBounds().min);
+    const max = convertUnitValue(colorRamp.getBounds().max);
+    const boundRange = max - min;
+    const boundValue = boundRange / maxLength;
+    const result = [];
+    for (let i = 0; i <= maxLength; i++) {
+      const value = !i
+        ? min
+        : i === maxLength - 1
+        ? max
+        : Math.round(min + i * boundValue);
+      result.push({ value: Math.round(value) });
+    }
+    return result;
   };
 
   const getLayer = (type: string) => {
@@ -160,10 +173,7 @@ export default function MapPage() {
         return temperature;
       }
       case "wind": {
-        const wind = new WindLayer({
-          id: selectedLayer?.value,
-          colorramp: selectedLayer?.colorRamp,
-        });
+        const wind = new WindLayer(option);
         return wind;
       }
       default:
@@ -175,6 +185,23 @@ export default function MapPage() {
     const { lng, lat } = lngLat;
     const result = await geocoding.reverse([lng, lat]);
     console.log(result);
+  };
+
+  const convertUnitValue = (value: string) => {
+    switch (layer) {
+      case "temperature": {
+        return temperature === TEMPERATURE_UNIT.CELSIUS
+          ? Number(value)
+          : convertTemper(Number(value), TEMPERATURE_UNIT.FAHRENHEIT);
+      }
+      case "wind": {
+        return wind === WIND_UNIT.METER_PER_SECOND
+          ? Number(value)
+          : convertSpeed(Number(value), WIND_UNIT.KILOMETER_PER_HOUR);
+      }
+      default:
+        return Number(value);
+    }
   };
 
   useEffect(() => {
@@ -195,6 +222,12 @@ export default function MapPage() {
     });
     return () => setMap(undefined);
   }, []);
+
+  useEffect(() => {
+    if (layer === "temperature" || layer === "wind") {
+      onLayerChange(layer);
+    }
+  }, [wind, temperature]);
 
   return (
     <Grid container p={3} height={"100%"}>

@@ -7,6 +7,7 @@ import { UNIT } from "@/app/(dashboard)/weather/type";
 import { OUTDOOR_TEMPERATURE } from "@/app/(dashboard)/weather/const";
 import ProgressBar from "./ProgressBar";
 import ChartWrapper from "@/app/(dashboard)/weather/components/ChartWrapper";
+import { TEMPERATURE_UNIT } from "@/src/const/unit";
 
 interface ITemperatureBar {
   value: number;
@@ -14,28 +15,34 @@ interface ITemperatureBar {
 
 export default function TemperatureBar(props: ITemperatureBar) {
   const { value } = props;
-  const { unit, tempUnit, convertTemper } = useUnit();
-
+  const { unit, convertTemper } = useUnit();
+  const { temperature } = unit;
   const selected = useMemo(() => {
     return getDescription(
-      unit === UNIT.METRIC ? value : convertTemper(value, UNIT.METRIC),
+      temperature === TEMPERATURE_UNIT.CELSIUS
+        ? value
+        : convertTemper(value, TEMPERATURE_UNIT.CELSIUS),
       OUTDOOR_TEMPERATURE
     );
   }, [value]);
 
   const max = useMemo(
     () =>
-      unit === UNIT.METRIC
+      temperature === TEMPERATURE_UNIT.CELSIUS
         ? OUTDOOR_TEMPERATURE[0].max
-        : convertTemper(OUTDOOR_TEMPERATURE[0].max),
+        : convertTemper(
+            OUTDOOR_TEMPERATURE[0].max,
+            TEMPERATURE_UNIT.FAHRENHEIT
+          ),
     [unit]
   );
   const min = useMemo(
     () =>
-      unit === UNIT.METRIC
+      temperature === TEMPERATURE_UNIT.CELSIUS
         ? OUTDOOR_TEMPERATURE[OUTDOOR_TEMPERATURE.length - 1].max
         : convertTemper(
-            OUTDOOR_TEMPERATURE[OUTDOOR_TEMPERATURE.length - 1].min
+            OUTDOOR_TEMPERATURE[OUTDOOR_TEMPERATURE.length - 1].min,
+            TEMPERATURE_UNIT.FAHRENHEIT
           ),
     [unit]
   );
@@ -43,7 +50,7 @@ export default function TemperatureBar(props: ITemperatureBar) {
   return (
     <ChartWrapper
       value={value}
-      unitSymbol={tempUnit}
+      unitSymbol={temperature}
       min={Math.round(min)}
       max={Math.round(max)}
       description={selected?.label}

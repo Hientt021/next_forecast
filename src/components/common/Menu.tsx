@@ -1,36 +1,34 @@
 import {
   IconButton,
   ListItemIcon,
-  Menu,
+  Menu as MuiMenu,
   MenuItem,
   Tooltip,
+  Box,
 } from "@mui/material";
 import { MouseEventHandler, useRef, useState } from "react";
 
-interface IDropdown {
-  options: IOption[];
+interface IMenu {
+  options: IMenuOption[];
   icon?: React.ReactNode;
   label?: string;
-  onValueChange?: (value: string) => void;
   value?: string;
   children?: React.ReactNode;
-  closeAfterChange?: boolean;
 }
 
-export interface IOption {
+export interface IMenuOption {
   icon?: React.ReactNode;
   label: string;
-  value: string;
+  action?: React.ReactNode;
 }
-export default function Dropdown(props: IDropdown) {
+
+export default function Menu(props: IMenu) {
   const {
     value = "",
     label = "",
     icon = <></>,
     options,
-    onValueChange,
     children = <></>,
-    closeAfterChange = true,
   } = props;
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
   const open = Boolean(anchor);
@@ -39,7 +37,7 @@ export default function Dropdown(props: IDropdown) {
 
   return (
     <>
-      <Menu
+      <MuiMenu
         anchorEl={anchor}
         open={open}
         onClose={onClose}
@@ -47,21 +45,28 @@ export default function Dropdown(props: IDropdown) {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         {options.map((el, i) => (
-          <MenuItem
-            onClick={(e: any) => {
-              const str = el.value === value ? "" : el.value;
-              onValueChange && onValueChange(str);
-              onClose();
-            }}
-            selected={value === el.value}
+          <Box
+            p={1}
             key={i}
-            value={el.value}
+            sx={{
+              textTransform: "capitalize",
+              display: "flex",
+              width: "100%",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 2,
+              color: "GrayText",
+            }}
           >
-            <ListItemIcon>{el?.icon}</ListItemIcon>
-            {el.label}
-          </MenuItem>
+            <Box>
+              <ListItemIcon>{el?.icon}</ListItemIcon>
+              {el.label}
+            </Box>
+
+            {el?.action}
+          </Box>
         ))}
-      </Menu>
+      </MuiMenu>
 
       <Tooltip title={label}>
         <IconButton onClick={onOpen} size="small" sx={{ ml: 2 }}>

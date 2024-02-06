@@ -12,41 +12,30 @@ export default class colorRampLegendControl {
     this._options = { ...options };
     this._container.classList.add(COLOR_RAMP_CLASS);
   }
+
   onAdd(map: Map) {
     this._map = map;
-    const colorramp = this._options.colorRamp;
-    const canvas = colorramp.getCanvasStrip();
+    const colorRamp = this._options.colorRamp;
+    const unit = this._options.unit;
+    const canvas = colorRamp.getCanvasStrip();
     canvas.style.height = "30px";
     canvas.style.width = "300px";
     canvas.style.marginLeft = "30px";
     canvas.style.marginBottom = "30px";
     canvas.style.border = "1px dashed #00000059";
 
-    const getColorRamp = () => {
-      const maxLength = 9;
-      const bounds = colorramp.getBounds();
-      const boundRange = bounds.max - bounds.min;
-      const boundValue = boundRange / maxLength;
-      const result = [];
-      for (let i = 0; i < maxLength; i++) {
-        const value = !i
-          ? bounds.min
-          : i === maxLength - 1
-          ? bounds.max
-          : Math.round(bounds.min + i * boundValue);
-        result.push({ value });
-      }
-      return result;
-    };
-
-    const colors = colorramp.length <= 9 ? colorramp : getColorRamp();
-
     const desc = document.createElement("div");
-    colors.forEach((el: any) => {
+    this._options.colorValue.forEach((el: any) => {
       const span = document.createElement("span");
+      span.classList.add("unit-value");
       span.innerHTML = el.value;
       desc.appendChild(span);
     });
+
+    const unitText = document.createElement("span");
+    unitText.classList.add("layer-unit");
+    unitText.innerHTML = unit;
+    desc.appendChild(unitText);
 
     desc.style.display = "flex";
     desc.style.marginLeft = "30px";

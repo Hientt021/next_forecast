@@ -21,7 +21,7 @@ export default function WeeklyItem(props: IWeeklyItem) {
   const { data, active = false, onClick } = props;
   const { isMobile } = useAppSelector((state) => state.app.device);
   const { query, createSearchParams } = useNavigate();
-  const { formatTemp } = useUnit();
+  const { formatTemp, unit } = useUnit();
 
   const isLoading = useMemo(() => {
     let result = false;
@@ -55,7 +55,7 @@ export default function WeeklyItem(props: IWeeklyItem) {
         </Typography>
         <WeatherIcon code={data.day.condition.code} size={60} />
         <Typography fontWeight={600}>
-          {formatTemp(data.day, "avgtemp", { unit: true })}
+          {formatTemp(data.day, "avgtemp") + unit.temperature}
         </Typography>
       </Box>
     </CardComponent>

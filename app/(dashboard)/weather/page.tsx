@@ -45,7 +45,6 @@ export default function WeatherPage() {
       showAlert(error, "error");
     } finally {
       setIsInitial(true);
-      setTimeout(() => setCurrentDt(date().unix()), 600000);
     }
   };
 

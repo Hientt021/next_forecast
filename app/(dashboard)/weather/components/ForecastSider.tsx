@@ -1,5 +1,4 @@
 "use client";
-import DegreeSwitch from "@/src/components/common/DegreeSwitch";
 import useUnit from "@/src/hook/useUnit";
 import { date } from "@/src/lib/dayjs/date";
 import { useAppDispatch, useAppSelector } from "@/src/lib/redux/store";
@@ -29,7 +28,7 @@ export default function ForecastSider(props: IHourForecastSider) {
     (state) => state.app.device
   );
   const { query } = useNavigate();
-  const { formatTemp } = useUnit();
+  const { formatTemp, unit } = useUnit();
   const { formatByTimezone } = useDate();
 
   const dayTime = useMemo(
@@ -51,7 +50,6 @@ export default function ForecastSider(props: IHourForecastSider) {
           width={"100%"}
         >
           <CitiesSearch onChange={onCoordinateChange} defaultValue={city} />
-          {query?.latitude && query?.longitude && <DegreeSwitch />}
         </Box>
 
         <Box
@@ -75,7 +73,7 @@ export default function ForecastSider(props: IHourForecastSider) {
       >
         <Stack gap={2} alignItems={"center"}>
           <Typography variant="h2" fontWeight={600}>
-            {formatTemp(data, "temp", { unit: true })!!}
+            {formatTemp(data, "temp") + unit.temperature}
           </Typography>
           <Typography fontWeight={600} sx={{ textTransform: "capitalize" }}>
             {data.condition.text}

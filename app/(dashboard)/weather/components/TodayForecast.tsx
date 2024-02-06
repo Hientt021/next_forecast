@@ -23,7 +23,7 @@ interface ITodayForecast {
 export default function TodayForecast(props: ITodayForecast) {
   const { currentList, onOpen } = props;
   const { query, onQueryChange } = useNavigate();
-  const { formatTemp } = useUnit();
+  const { formatTemp, unit } = useUnit();
   const [active, setActive] = useState(0);
   const { isMobile, isMobileDevice } = useAppSelector(
     (state) => state.app.device
@@ -87,7 +87,7 @@ export default function TodayForecast(props: ITodayForecast) {
             gap={1}
           >
             <Typography fontWeight={600}>
-              {formatTemp(el, "temp", { unit: true })}
+              {formatTemp(el, "temp") + unit.temperature}
             </Typography>
             <WeatherIcon
               code={currentList?.[active]?.condition.code}
