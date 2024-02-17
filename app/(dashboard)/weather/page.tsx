@@ -58,8 +58,6 @@ export default function WeatherPage() {
         const weekly = await formatDayList(forecastRes);
         setWeeklyList(weekly);
         setData(forecastRes);
-
-        console.log(forecastRes);
       }
     } catch (error: any) {
       showAlert(error, "error");

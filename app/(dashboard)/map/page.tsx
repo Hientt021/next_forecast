@@ -2,14 +2,25 @@
 
 import CardComponent from "@/src/components/common/CardComponent";
 import { MAP_KEY } from "@/src/const/token";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Stack, Typography } from "@mui/material";
 
 import Dropdown from "@/src/components/common/Dropdown";
 import useNavigate from "@/src/hook/useNavigate";
 import colorRampLegendControl, {
   COLOR_RAMP_CLASS,
 } from "@/src/lib/maptiler/colorRampControl";
-import { LngLat, Map, MapStyle, config, geocoding } from "@maptiler/sdk";
+import {
+  GeoJSONSource,
+  GeocodingFeature,
+  LngLat,
+  LngLatBounds,
+  Map,
+  MapMouseEvent,
+  MapStyle,
+  Marker,
+  config,
+  geocoding,
+} from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import {
   ColorRamp,
@@ -70,18 +81,12 @@ export default function MapPage() {
   const { isMobileDevice } = useAppSelector((state) => state.app.device);
   const [map, setMap] = useState<Map | undefined>();
   const [layer, setLayer] = useState("");
-
-  const { query } = useNavigate();
+  const [features, setFeatures] = useState<GeocodingFeature[]>([]);
+  const [marker, setMarker] = useState<Marker | null>(null);
+  const { query, onQueryChange } = useNavigate();
+  const { latitude = 0, longitude = 0 } = query;
   const { unit, convertTemper, convertSpeed } = useUnit();
   const { temperature, wind } = unit;
-
-  const onCoordinateChange = (coordinate: ICoordinate) => {
-    const { latitude, longitude } = coordinate;
-    if (map)
-      map.flyTo({
-        center: [Number(longitude), Number(latitude)],
-      });
-  };
 
   const onLayerChange = (value: string) => {
     if (!map) return;
@@ -119,8 +124,6 @@ export default function MapPage() {
     });
 
     map.addControl(newControl, "bottom-left");
-
-    console.log(selectedLayer?.colorRamp.getRawColorStops());
   };
 
   const removeColorRamp = () => {
@@ -181,10 +184,14 @@ export default function MapPage() {
     }
   };
 
-  const onMapClick = async (lngLat: LngLat) => {
-    const { lng, lat } = lngLat;
-    const result = await geocoding.reverse([lng, lat]);
-    console.log(result);
+  const onMapClick = async (e: MapMouseEvent & Object) => {
+    const { lng, lat } = e.lngLat;
+    const results = await geocoding.reverse([lng, lat]);
+    const source = e.target.getSource("search-results") as GeoJSONSource;
+
+    if (source) source.setData(results);
+    setFeatures(results.features);
+    onQueryChange({ ...query, latitude: lat, longitude: lng });
   };
 
   const convertUnitValue = (value: string) => {
@@ -205,20 +212,36 @@ export default function MapPage() {
   };
 
   useEffect(() => {
-    const { latitude = 0, longitude = 0 } = query;
-
     const newMap = new Map({
       container: mapContainer.current!!,
       style: MapStyle.STREETS,
       center: [longitude, latitude],
-      zoom: latitude && longitude ? 0 : 0,
+      zoom: latitude && longitude ? 12 : 0,
       minZoom: 0,
       maxZoom: 28,
     });
     setMap(newMap);
 
-    newMap.on("click", (e) => {
-      onMapClick(e.lngLat);
+    newMap.on("click", onMapClick);
+    newMap.on("load", (e) => {
+      newMap.addSource("search-results", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [],
+        },
+      });
+      newMap.addLayer({
+        id: "point-result",
+        type: "circle",
+        source: "search-results",
+        paint: {
+          "circle-radius": 8,
+          "circle-color": "#B42222",
+          "circle-opacity": 0.5,
+        },
+        filter: ["==", "$type", "Point"],
+      });
     });
     return () => setMap(undefined);
   }, []);
@@ -228,6 +251,18 @@ export default function MapPage() {
       onLayerChange(layer);
     }
   }, [wind, temperature]);
+
+  useEffect(() => {
+    if (map) {
+      if (marker) {
+        marker.remove();
+      }
+      const newMarker = new Marker()
+        .setLngLat([longitude, latitude])
+        .addTo(map);
+      setMarker(newMarker);
+    }
+  }, [latitude, longitude]);
 
   return (
     <Grid container p={3} height={"100%"}>
@@ -244,7 +279,16 @@ export default function MapPage() {
           alignItems={"center"}
         >
           <CitiesSearch
-            onChange={onCoordinateChange}
+            onChange={(coordinate) =>
+              map &&
+              onMapClick({
+                target: map,
+                lngLat: {
+                  lat: Number(coordinate.latitude),
+                  lng: Number(coordinate.longitude),
+                },
+              } as any)
+            }
             placeholder="Cities search"
           />
           <Dropdown
@@ -255,6 +299,22 @@ export default function MapPage() {
             value={layer}
           />
         </Box>
+        <Stack gap={2}>
+          {features.map((el, i) => (
+            <CardComponent p={1} sx={{ cursor: "pointer" }} key={i}>
+              <Typography
+                onClick={() => {
+                  if (map) {
+                    const bound = new LngLatBounds(el.bbox as any);
+                    map.fitBounds(bound);
+                  }
+                }}
+              >
+                {el.place_name}
+              </Typography>
+            </CardComponent>
+          ))}
+        </Stack>
       </Grid>
       <Grid
         item

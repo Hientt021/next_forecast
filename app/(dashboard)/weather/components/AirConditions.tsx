@@ -89,7 +89,6 @@ export default function AirConditions(props: IAirConditions) {
       mobileRender: (value: IHourForecast) => formatTemp(value, "feelslike"),
       render: (value: IHourForecast) => {
         const temp = formatTemp(value, "feelslike") as number;
-        console.log(temp);
         return <TemperatureBar value={temp} />;
       },
     },
@@ -109,11 +108,12 @@ export default function AirConditions(props: IAirConditions) {
       label: "Air Pollution",
       key: "air_quality",
       icon: <MasksIcon />,
-      mobileRender: (value: IHourForecast) => value.air_quality["us-epa-index"],
+      mobileRender: (value: IHourForecast) =>
+        value.air_quality?.["us-epa-index"],
       render: (value: IHourForecast) => (
         <SemiDonutChart
           list={AIR_POLLUTION_LIST}
-          value={value.air_quality["us-epa-index"]!!}
+          value={value.air_quality?.["us-epa-index"]!!}
         />
       ),
     },
