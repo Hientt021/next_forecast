@@ -76,9 +76,18 @@ const layers = [
     colorRamp: ColorRamp.builtin.WIND_ROCKET,
   },
 ];
+
+const placesList = [
+  "address",
+  "municipality",
+  "municipal_district",
+  "subregion",
+  "country",
+];
 export default function MapPage() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const { isMobileDevice } = useAppSelector((state) => state.app.device);
+  const { location, device } = useAppSelector((state) => state.app);
+  const { isMobileDevice } = device;
   const [map, setMap] = useState<Map | undefined>();
   const [layer, setLayer] = useState("");
   const [features, setFeatures] = useState<GeocodingFeature[]>([]);
@@ -211,6 +220,18 @@ export default function MapPage() {
     }
   };
 
+  const onMarkerChange = () => {
+    if (map) {
+      if (marker) {
+        marker.remove();
+      }
+      const newMarker = new Marker()
+        .setLngLat([longitude, latitude])
+        .addTo(map);
+      setMarker(newMarker);
+    }
+  };
+
   useEffect(() => {
     const newMap = new Map({
       container: mapContainer.current!!,
@@ -253,16 +274,12 @@ export default function MapPage() {
   }, [wind, temperature]);
 
   useEffect(() => {
-    if (map) {
-      if (marker) {
-        marker.remove();
-      }
-      const newMarker = new Marker()
-        .setLngLat([longitude, latitude])
-        .addTo(map);
-      setMarker(newMarker);
-    }
-  }, [latitude, longitude]);
+    onMarkerChange();
+  }, [latitude, longitude, map]);
+
+  useEffect(() => {
+    console.log(features);
+  }, [features]);
 
   return (
     <Grid container p={3} height={"100%"}>
@@ -299,22 +316,28 @@ export default function MapPage() {
             value={layer}
           />
         </Box>
-        <Stack gap={2}>
-          {features.map((el, i) => (
-            <CardComponent p={1} sx={{ cursor: "pointer" }} key={i}>
-              <Typography
-                onClick={() => {
-                  if (map) {
-                    const bound = new LngLatBounds(el.bbox as any);
-                    map.fitBounds(bound);
-                  }
-                }}
-              >
-                {el.place_name}
-              </Typography>
-            </CardComponent>
-          ))}
-        </Stack>
+        <Box>
+          {features.map(
+            (el, i) =>
+              placesList.find((place) => place === el.place_type[0]) && (
+                <Typography
+                  key={i}
+                  display={"inline"}
+                  color="white"
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => {
+                    if (map) {
+                      const bound = new LngLatBounds(el.bbox as any);
+                      map.fitBounds(bound);
+                    }
+                  }}
+                >
+                  {i > 0 && ", "}
+                  {el.text}
+                </Typography>
+              )
+          )}
+        </Box>
       </Grid>
       <Grid
         item
