@@ -1,6 +1,6 @@
 "use server";
 
-import { ICoordinate } from "@/app/(dashboard)/weather/page";
+import { ICoordinate } from "@/app/(dashboard)/weather/WeatherPage";
 import api from "../api/api";
 import { IForecastData } from "@/app/(dashboard)/weather/type";
 import { date } from "../lib/dayjs/date";

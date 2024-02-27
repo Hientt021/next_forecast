@@ -7,7 +7,7 @@ import Image from "next/image";
 import CitiesSearch from "./CitiesSearch";
 import Loader from "@/src/components/common/Loader";
 import { ICurrentForecast, IForecastData, IHourForecast } from "../type";
-import { ICoordinate } from "../page";
+import { ICoordinate } from "../WeatherPage";
 import { StyledWrapper } from "../styled";
 import { useEffect, useMemo } from "react";
 import useNavigate from "@/src/hook/useNavigate";

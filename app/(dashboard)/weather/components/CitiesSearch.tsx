@@ -6,7 +6,7 @@ import useNavigate from "@/src/hook/useNavigate";
 import PlaceIcon from "@mui/icons-material/Place";
 import { Autocomplete, Box, CircularProgress, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ICoordinate } from "../page";
+import { ICoordinate } from "../WeatherPage";
 export interface IOptions {
   value: any;
   label: string;

@@ -1,4 +1,4 @@
-import { ICoordinate } from "@/app/(dashboard)/weather/page";
+import { ICoordinate } from "@/app/(dashboard)/weather/WeatherPage";
 import { IHourForecast, ILocation } from "@/app/(dashboard)/weather/type";
 import {
   PRECIPITATION_UNIT,
