@@ -15,15 +15,15 @@ import CityBuilding from "@/src/components/icons/CityBuilding";
 import IconComponent from "@/src/components/icons";
 import WeatherIcon from "@/src/components/icons/WeatherIcon";
 import useDate from "@/src/hook/useDate";
+import PlaceIcon from "@mui/icons-material/Place";
 
 interface IHourForecastSider {
   data: IHourForecast;
   city?: string;
-  onCoordinateChange: (value: ICoordinate) => void;
 }
 
 export default function ForecastSider(props: IHourForecastSider) {
-  const { data, city = "", onCoordinateChange } = props;
+  const { data, city = "" } = props;
   const { isIpad, isMobileDevice } = useAppSelector(
     (state) => state.app.device
   );
@@ -42,14 +42,10 @@ export default function ForecastSider(props: IHourForecastSider) {
 
   return (
     <>
-      <Stack width={"100%"}>
-        <Box
-          display="flex"
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          width={"100%"}
-        >
-          <CitiesSearch onChange={onCoordinateChange} defaultValue={city} />
+      <Stack width={"100%"} spacing={2}>
+        <Box display="flex" gap={1} alignItems={"center"} width={"100%"}>
+          <PlaceIcon />
+          {city}
         </Box>
 
         <Box

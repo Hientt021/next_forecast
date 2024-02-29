@@ -44,10 +44,10 @@ const useUnit = () => {
     if (!value) return 0;
     switch (toUnit) {
       case WIND_UNIT.METER_PER_SECOND: {
-        return value / 1.6;
+        return Math.round(value / 1.6);
       }
       case WIND_UNIT.KILOMETER_PER_HOUR: {
-        return value * 1.6;
+        return Math.round(value * 1.6);
       }
       default:
         return 0;
@@ -57,10 +57,10 @@ const useUnit = () => {
   const convertTemper = (value: number, toUnit: string) => {
     switch (toUnit) {
       case TEMPERATURE_UNIT.CELSIUS: {
-        return (value - 32) * (5 / 9);
+        return Math.round((value - 32) * (5 / 9));
       }
       case TEMPERATURE_UNIT.FAHRENHEIT: {
-        return value * (9 / 5) + 32;
+        return Math.round(value * (9 / 5) + 32);
       }
       default:
         return 0;

@@ -23,12 +23,11 @@ export interface ICoordinate {
   latitude: string;
 }
 
-
-
 export default function WeatherPage() {
   const { unit, device } = useAppSelector((state) => state.app);
   const { isMobileDevice } = device;
   const { query, onQueryChange } = useNavigate();
+  const { latitude = "", longitude = "" } = query;
   const { showAlert } = useAlert();
   const dispatch = useAppDispatch();
   const [data, setData] = useState<IForecastData | undefined>(undefined);
@@ -107,6 +106,10 @@ export default function WeatherPage() {
     init();
   }, []);
 
+  useEffect(() => {
+    if (latitude && longitude) fetchData({ latitude, longitude });
+  }, [latitude, longitude]);
+
   const selectedForecast = useMemo(() => {
     const hours = weeklyList.find((el) =>
       el.hour.find((item) => item.time_epoch === Number(query?.dt))
@@ -142,11 +145,7 @@ export default function WeatherPage() {
             width: "100%",
           }}
         >
-          <ForecastSider
-            data={selectedForecast!!}
-            city={data?.location.name}
-            onCoordinateChange={fetchData}
-          />
+          <ForecastSider data={selectedForecast!!} city={data?.location.name} />
         </Loader>
       </Grid>
       <Grid

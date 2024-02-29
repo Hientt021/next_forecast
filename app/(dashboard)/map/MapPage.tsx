@@ -25,10 +25,15 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 import {
   ColorRamp,
   PrecipitationLayer,
+  PrecipitationLayerOptions,
   PressureLayer,
+  PressureLayerOptions,
   RadarLayer,
+  RadarLayerOptions,
   TemperatureLayer,
+  TemperatureLayerOptions,
   WindLayer,
+  WindLayerOptions,
 } from "@maptiler/weather";
 import AirIcon from "@mui/icons-material/Air";
 import DeviceThermostatIcon from "@mui/icons-material/DeviceThermostat";
@@ -50,30 +55,35 @@ const layers = [
     label: "Precipitation",
     icon: <ThunderstormIcon />,
     colorRamp: ColorRamp.builtin.PRECIPITATION,
+    layer: (opt: PrecipitationLayerOptions) => new PrecipitationLayer(opt),
   },
   {
     value: "pressure",
     label: "Pressure",
     icon: <SpeedIcon />,
     colorRamp: ColorRamp.builtin.PRESSURE_2,
+    layer: (opt: PressureLayerOptions) => new PressureLayer(opt),
   },
   {
     value: "temperature",
     label: "Temperature",
     icon: <DeviceThermostatIcon />,
     colorRamp: ColorRamp.builtin.TEMPERATURE_3,
+    layer: (opt: TemperatureLayerOptions) => new TemperatureLayer(opt),
   },
   {
     value: "radar",
     label: "Radar",
     icon: <RadarIcon />,
     colorRamp: ColorRamp.builtin.RADAR,
+    layer: (opt: RadarLayerOptions) => new RadarLayer(opt),
   },
   {
     value: "wind",
     label: "Wind",
     icon: <AirIcon />,
     colorRamp: ColorRamp.builtin.WIND_ROCKET,
+    layer: (opt: WindLayerOptions) => new WindLayer(opt),
   },
 ];
 
@@ -93,38 +103,39 @@ export default function MapPage() {
   const [layer, setLayer] = useState("");
   const [features, setFeatures] = useState<GeocodingFeature[]>([]);
   const [marker, setMarker] = useState<Marker | null>(null);
+  const [layerValue, setLayerValue] = useState<any>("");
   const { query, onQueryChange } = useNavigate();
   const { latitude = 0, longitude = 0 } = query;
   const { unit, convertTemper, convertSpeed } = useUnit();
   const { temperature, wind } = unit;
 
-  const onLayerChange = (value: string) => {
+  const onLayerChange = async (value: string) => {
     if (!map) return;
 
-    hidePrevLayer();
+    if (layer) hidePrevLayer(layer);
     if (value) showNewLayer(value);
     setLayer(value);
   };
 
-  const hidePrevLayer = () => {
-    if (map && layer) {
-      map.setLayoutProperty(layer, "visibility", "none");
+  const hidePrevLayer = (type: string) => {
+    if (map && type) {
+      map.setLayoutProperty(type, "visibility", "none");
+      map.setPaintProperty("Water", "fill-color", "#85CBFA");
       removeColorRamp();
+      setLayerValue("");
     }
   };
 
-  const showNewLayer = (value: string) => {
+  const showNewLayer = async (type: string) => {
     if (!map) return;
-    const alreadyExist = !!map.getLayer(value);
+    map.setPaintProperty("Water", "fill-color", "rgba(0, 0, 0, 0.4)");
+    const curLayer: any = map.getLayer(type);
+    if (curLayer) {
+      map.setLayoutProperty(type, "visibility", "visibility");
+      handleLayerValue(curLayer.implementation);
+    } else addNewLayer(type);
 
-    if (alreadyExist) map.setLayoutProperty(value, "visibility", "visibility");
-    else {
-      const newLayer = getLayer(value);
-      if (newLayer) {
-        map.addLayer(newLayer, "Water");
-      }
-    }
-    const selectedLayer = layers.find((el) => el.value === value);
+    const selectedLayer = layers.find((el) => el.value === type);
     const colorValue = getColorRamp(selectedLayer?.colorRamp);
 
     const newControl = new colorRampLegendControl({
@@ -132,7 +143,6 @@ export default function MapPage() {
       colorValue: colorValue,
       unit: unit[selectedLayer?.value as keyof typeof unit],
     });
-
     map.addControl(newControl, "bottom-left");
   };
 
@@ -161,47 +171,38 @@ export default function MapPage() {
     return result;
   };
 
-  const getLayer = (type: string) => {
+  const addNewLayer = (type: string) => {
     const selectedLayer = layers.find((el) => el.value === type);
-    const option = {
-      id: selectedLayer?.value,
-      colorramp: selectedLayer?.colorRamp,
-    };
-    switch (type) {
-      case "precipitation": {
-        const precipitation = new PrecipitationLayer(option);
-        return precipitation;
-      }
-      case "radar": {
-        const radar = new RadarLayer(option);
-        return radar;
-      }
-      case "pressure": {
-        const pressure = new PressureLayer(option);
-        return pressure;
-      }
-
-      case "temperature": {
-        const temperature = new TemperatureLayer(option);
-        return temperature;
-      }
-      case "wind": {
-        const wind = new WindLayer(option);
-        return wind;
-      }
-      default:
-        return null;
+    if (selectedLayer) {
+      const option = {
+        id: selectedLayer.value,
+        colorramp: selectedLayer.colorRamp,
+      };
+      const newLayer = selectedLayer.layer(option);
+      newLayer.animateByFactor(1);
+      map?.addLayer(newLayer, "Water");
+      setTimeout(() => handleLayerValue(newLayer), 3000);
     }
   };
 
   const onMapClick = async (e: MapMouseEvent & Object) => {
     const { lng, lat } = e.lngLat;
-    const results = await geocoding.reverse([lng, lat]);
+    const coordinate = [lng, lat];
+    const results = await geocoding.reverse(coordinate);
     const source = e.target.getSource("search-results") as GeoJSONSource;
 
     if (source) source.setData(results);
     setFeatures(results.features);
-    onQueryChange({ ...query, latitude: lat, longitude: lng });
+    map?.flyTo({
+      center: coordinate as any,
+      zoom: 19,
+    });
+  };
+
+  const handleLayerValue = (curLayer: any) => {
+    const curValue = curLayer?.pickAt(longitude, latitude);
+    const value = curValue?.value || curValue?.speedMetersPerSecond;
+    setLayerValue(convertUnitValue(value?.toFixed(1)));
   };
 
   const convertUnitValue = (value: string) => {
@@ -244,7 +245,13 @@ export default function MapPage() {
     });
     setMap(newMap);
 
-    newMap.on("click", onMapClick);
+    newMap.on("click", (e) =>
+      onQueryChange({
+        ...query,
+        latitude: e.lngLat.lat,
+        longitude: e.lngLat.lng,
+      })
+    );
     newMap.on("load", (e) => {
       newMap.addSource("search-results", {
         type: "geojson",
@@ -265,6 +272,7 @@ export default function MapPage() {
         filter: ["==", "$type", "Point"],
       });
     });
+
     return () => setMap(undefined);
   }, []);
 
@@ -275,56 +283,48 @@ export default function MapPage() {
   }, [wind, temperature]);
 
   useEffect(() => {
-    onMarkerChange();
+    if (latitude && longitude && map) {
+      onMapClick({
+        target: map,
+        lngLat: {
+          lat: Number(latitude),
+          lng: Number(longitude),
+        },
+      } as any);
+      onMarkerChange();
+    }
   }, [latitude, longitude, map]);
 
-  useEffect(() => {
-    console.log(features);
-  }, [features]);
-
   return (
-    <Grid container p={3} height={"100%"}>
-      <Grid
-        item
-        mobile={12}
-        laptop={3}
-        px={2}
-        height={isMobileDevice ? "auto" : "100%"}
+    <Box
+      p={3}
+      sx={{ height: isMobileDevice ? "80vh" : "100%", position: "relative" }}
+    >
+      <CardComponent
+        sx={{
+          height: "100%",
+          "div.maplibregl-ctrl, div.maplibregl-ctrl-attrib-inner": {
+            display: "none !important",
+          },
+        }}
       >
         <Box
-          display={"flex"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
+          sx={{
+            position: "absolute",
+            top: 40,
+            left: 40,
+            zIndex: 100,
+            background: "white",
+            borderRadius: 6,
+            p: 1.5,
+          }}
         >
-          <CitiesSearch
-            onChange={(coordinate) =>
-              map &&
-              onMapClick({
-                target: map,
-                lngLat: {
-                  lat: Number(coordinate.latitude),
-                  lng: Number(coordinate.longitude),
-                },
-              } as any)
-            }
-            placeholder="Cities search"
-          />
-          <Dropdown
-            onValueChange={onLayerChange}
-            icon={<LayersIcon sx={{ color: "white" }} />}
-            label={"Layer"}
-            options={layers}
-            value={layer}
-          />
-        </Box>
-        <Box>
           {features.map(
             (el, i) =>
               placesList.find((place) => place === el.place_type[0]) && (
                 <Typography
                   key={i}
                   display={"inline"}
-                  color="white"
                   sx={{ cursor: "pointer" }}
                   onClick={() => {
                     if (map) {
@@ -339,30 +339,46 @@ export default function MapPage() {
               )
           )}
         </Box>
-      </Grid>
-      <Grid
-        item
-        mobile={12}
-        laptop={9}
-        sx={{ height: isMobileDevice ? "80vh" : "100%" }}
-      >
-        <CardComponent
+        <Box
           sx={{
-            height: "100%",
-            "div.maplibregl-ctrl, div.maplibregl-ctrl-attrib-inner": {
-              display: "none !important",
-            },
+            position: "absolute",
+            top: 40,
+            right: 40,
+            zIndex: 100,
           }}
         >
-          <Box
-            id="map"
-            ref={mapContainer}
-            className="map"
-            tabIndex={0}
-            sx={{ height: "100%" }}
+          <Dropdown
+            onValueChange={onLayerChange}
+            icon={<LayersIcon sx={{ color: "white" }} />}
+            label={"Layer"}
+            options={layers}
+            value={layer}
           />
-        </CardComponent>
-      </Grid>
-    </Grid>
+        </Box>
+        <Box
+          sx={{
+            position: "absolute",
+            bottom: 40,
+            right: 40,
+            zIndex: 100,
+          }}
+        >
+          {layerValue && (
+            <Typography
+              sx={{ fontSize: "1.5rem", fontWeight: 600, color: "#fff" }}
+            >
+              {layerValue} {unit[layer as keyof typeof unit]}
+            </Typography>
+          )}
+        </Box>
+        <Box
+          id="map"
+          ref={mapContainer}
+          className="map"
+          tabIndex={0}
+          sx={{ height: "100%" }}
+        />
+      </CardComponent>
+    </Box>
   );
 }

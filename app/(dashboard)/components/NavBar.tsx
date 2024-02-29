@@ -6,6 +6,7 @@ import useNavigate from "@/src/hook/useNavigate";
 import { useAppSelector } from "@/src/lib/redux/store";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box } from "@mui/material";
+import CitiesSearch from "../weather/components/CitiesSearch";
 
 export const ROUTERS = [
   {
@@ -24,8 +25,8 @@ export const ROUTERS = [
 
 export default function NavBar() {
   const { query, onNavigate, pathname } = useNavigate();
-  const { isMobileDevice } = useAppSelector((state) => state.app.device);
-
+  const { device, location } = useAppSelector((state) => state.app);
+  const { isMobileDevice } = device;
   const onNavClick = (value: string) =>
     onNavigate({
       pathname: value,
@@ -40,6 +41,10 @@ export default function NavBar() {
     desktop: {
       left: ROUTERS,
       right: [
+        {
+          id: "search",
+          icon: <CitiesSearch defaultValue={location?.name} />,
+        },
         {
           id: "setting",
           icon: <SettingUnit />,
@@ -107,6 +112,7 @@ export default function NavBar() {
           renderNavItem(el)
         )}
       </Box>
+
       <Box display="flex">
         {items[isMobileDevice ? "mobile" : "desktop"].right.map((el) =>
           renderNavItem(el)
