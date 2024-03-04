@@ -160,7 +160,7 @@ export default function MapPage() {
     const boundRange = max - min;
     const boundValue = boundRange / maxLength;
     const result = [];
-    for (let i = 0; i <= maxLength; i++) {
+    for (let i = 0; i < maxLength; i++) {
       const value = !i
         ? min
         : i === maxLength - 1
