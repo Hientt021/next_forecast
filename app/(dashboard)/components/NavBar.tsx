@@ -52,7 +52,12 @@ export default function NavBar() {
       ],
     },
     mobile: {
-      left: [],
+      left: [
+        {
+          id: "search",
+          icon: <CitiesSearch defaultValue={location?.name} />,
+        },
+      ],
       right: [
         {
           id: "routers",

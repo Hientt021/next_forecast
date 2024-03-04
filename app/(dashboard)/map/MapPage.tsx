@@ -108,6 +108,7 @@ export default function MapPage() {
   const { latitude = 0, longitude = 0 } = query;
   const { unit, convertTemper, convertSpeed } = useUnit();
   const { temperature, wind } = unit;
+  const mapPadding = isMobileDevice ? 20 : 40;
 
   const onLayerChange = async (value: string) => {
     if (!map) return;
@@ -302,28 +303,25 @@ export default function MapPage() {
   return (
     <Box
       p={3}
-      sx={{ height: isMobileDevice ? "80vh" : "100%", position: "relative" }}
+      sx={{ height: "100%" }}
+      display={"flex"}
+      flexDirection={isMobileDevice ? "column" : "row"}
+      alignItems={"center"}
+      justifyContent={"center"}
+      gap={1}
     >
-      <CardComponent
-        sx={{
-          height: "100%",
-          "div.maplibregl-ctrl, div.maplibregl-ctrl-attrib-inner": {
-            display: "none !important",
-          },
-        }}
-      >
+      {isMobileDevice && (
         <Box
           sx={{
-            position: "absolute",
-            top: 40,
-            left: 40,
-            zIndex: 100,
+            position: "relative",
+
             background: "white",
             borderRadius: 6,
             p: 1.5,
+            width: "100%",
           }}
         >
-          {features.length &&
+          {!!features.length &&
             features.map(
               (el, i) =>
                 placesList.find((place) => place === el.place_type[0]) && (
@@ -344,11 +342,58 @@ export default function MapPage() {
                 )
             )}
         </Box>
+      )}
+      <CardComponent
+        sx={{
+          position: "relative",
+          width: "100%",
+          height: isMobileDevice ? "80vh" : "100%",
+          "div.maplibregl-ctrl, div.maplibregl-ctrl-attrib-inner": {
+            display: "none !important",
+          },
+        }}
+      >
+        {!isMobileDevice && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 40,
+              left: 40,
+              zIndex: 100,
+              background: "white",
+              borderRadius: 6,
+              p: 1.5,
+              width: "max-content",
+              maxWidth: "80vw",
+            }}
+          >
+            {!!features.length &&
+              features.map(
+                (el, i) =>
+                  placesList.find((place) => place === el.place_type[0]) && (
+                    <Typography
+                      key={i}
+                      display={"inline"}
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {
+                        if (map) {
+                          const bound = new LngLatBounds(el.bbox as any);
+                          map.fitBounds(bound);
+                        }
+                      }}
+                    >
+                      {i > 0 && ", "}
+                      {el.text}
+                    </Typography>
+                  )
+              )}
+          </Box>
+        )}
         <Box
           sx={{
             position: "absolute",
-            top: 40,
-            right: 40,
+            top: mapPadding,
+            right: mapPadding,
             zIndex: 100,
           }}
         >
@@ -363,8 +408,8 @@ export default function MapPage() {
         <Box
           sx={{
             position: "absolute",
-            bottom: 40,
-            right: 40,
+            [isMobileDevice ? "top" : "bottom"]: mapPadding,
+            [isMobileDevice ? "left" : "right"]: mapPadding,
             zIndex: 100,
           }}
         >
