@@ -201,7 +201,7 @@ export default function MapPage() {
 
   const handleLayerValue = (curLayer: any) => {
     const curValue = curLayer?.pickAt(longitude, latitude);
-    const value = curValue?.value || curValue?.speedMetersPerSecond;
+    const value = curValue?.value || curValue?.speedMetersPerSecond || 0;
     setLayerValue(convertUnitValue(value?.toFixed(1)));
   };
 
@@ -292,6 +292,10 @@ export default function MapPage() {
         },
       } as any);
       onMarkerChange();
+      if (layer) {
+        const curLayer = map.getLayer(layer) as any;
+        handleLayerValue(curLayer.implementation);
+      }
     }
   }, [latitude, longitude, map]);
 
@@ -319,25 +323,26 @@ export default function MapPage() {
             p: 1.5,
           }}
         >
-          {features.map(
-            (el, i) =>
-              placesList.find((place) => place === el.place_type[0]) && (
-                <Typography
-                  key={i}
-                  display={"inline"}
-                  sx={{ cursor: "pointer" }}
-                  onClick={() => {
-                    if (map) {
-                      const bound = new LngLatBounds(el.bbox as any);
-                      map.fitBounds(bound);
-                    }
-                  }}
-                >
-                  {i > 0 && ", "}
-                  {el.text}
-                </Typography>
-              )
-          )}
+          {features.length &&
+            features.map(
+              (el, i) =>
+                placesList.find((place) => place === el.place_type[0]) && (
+                  <Typography
+                    key={i}
+                    display={"inline"}
+                    sx={{ cursor: "pointer" }}
+                    onClick={() => {
+                      if (map) {
+                        const bound = new LngLatBounds(el.bbox as any);
+                        map.fitBounds(bound);
+                      }
+                    }}
+                  >
+                    {i > 0 && ", "}
+                    {el.text}
+                  </Typography>
+                )
+            )}
         </Box>
         <Box
           sx={{
@@ -363,7 +368,7 @@ export default function MapPage() {
             zIndex: 100,
           }}
         >
-          {layerValue && (
+          {layer && (
             <Typography
               sx={{ fontSize: "1.5rem", fontWeight: 600, color: "#fff" }}
             >

@@ -37,7 +37,8 @@ export default function WeatherPage() {
 
   const init = async () => {
     try {
-      if (navigator.geolocation) {
+      if (longitude && latitude) fetchData({ latitude, longitude });
+      else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           onAllowedAccessLocation,
           onDeniedAccessLocation
