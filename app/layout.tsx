@@ -1,11 +1,11 @@
 import StoreProvider from "@/src/lib/redux/StoreProvider";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import React from "react";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({ weight: "400", subsets: ["latin"] });
 const Dimension = dynamic(() => import("@/src/hook/useDevice"), {
   ssr: false,
 });
@@ -33,20 +33,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={inter.className} style={{ position: "relative" }}>
+      <body className={roboto.className} style={{ position: "relative" }}>
         <MuiThemeProvider>
           <StoreProvider>
             <SnackProvider>
               <Dimension />
-
               {children}
             </SnackProvider>
           </StoreProvider>
