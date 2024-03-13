@@ -30,6 +30,7 @@ export default function EmptyLocation(props: IEmptyLocation) {
           variant={"body1"}
           fontWeight={500}
           color={isDesktop ? "Gray" : "white"}
+          textAlign={"center"}
         >
           Weather forecast information will appear here after you select a city
         </Typography>

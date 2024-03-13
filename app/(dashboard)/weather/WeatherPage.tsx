@@ -4,7 +4,6 @@ import { getForecast } from "@/src/actions";
 import Loader from "@/src/components/common/Loader";
 import useAlert from "@/src/hook/useAlert";
 import useNavigate from "@/src/hook/useNavigate";
-import { date } from "@/src/lib/dayjs/date";
 import {
   setAllowAccessLocation,
   setCurrent,
@@ -16,7 +15,6 @@ import { useEffect, useMemo, useState } from "react";
 import ForecastSider from "./components/ForecastSider";
 import WeeklyForecast from "./components/WeeklyForecast";
 import { IDayForecastList, IForecastData, IHourForecast } from "./type";
-import { Metadata, ResolvingMetadata } from "next";
 export interface ICoordinate {
   name?: string;
   longitude: string;
@@ -32,7 +30,6 @@ export default function WeatherPage() {
   const dispatch = useAppDispatch();
   const [data, setData] = useState<IForecastData | undefined>(undefined);
   const [isInitial, setIsInitial] = useState(false);
-  const [currentDt, setCurrentDt] = useState(0);
   const [weeklyList, setWeeklyList] = useState<IDayForecastList[]>([]);
 
   const init = async () => {
@@ -123,7 +120,7 @@ export default function WeatherPage() {
   }, [query?.dt, weeklyList]);
 
   return (
-    <Grid container pr={isMobileDevice ? 0 : 2}>
+    <Grid height="100%" container pr={isMobileDevice ? 0 : 2}>
       <Grid
         item
         mobile={12}
@@ -137,7 +134,7 @@ export default function WeatherPage() {
         }}
       >
         <Loader
-          loading={!(selectedForecast && data)}
+          loading={!isInitial}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -146,7 +143,12 @@ export default function WeatherPage() {
             width: "100%",
           }}
         >
-          <ForecastSider data={selectedForecast!!} city={data?.location.name} />
+          {selectedForecast && (
+            <ForecastSider
+              data={selectedForecast!!}
+              city={data?.location.name}
+            />
+          )}
         </Loader>
       </Grid>
       <Grid
@@ -162,7 +164,7 @@ export default function WeatherPage() {
           zIndex: 2,
         }}
       >
-        <Loader loading={!(isInitial && !!weeklyList.length)}>
+        <Loader loading={!isInitial}>
           <WeeklyForecast weeklyList={weeklyList} />
         </Loader>
       </Grid>

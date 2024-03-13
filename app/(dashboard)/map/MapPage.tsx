@@ -310,7 +310,7 @@ export default function MapPage() {
       justifyContent={"center"}
       gap={1}
     >
-      {isMobileDevice && (
+      {isMobileDevice && !!features.length && (
         <Box
           sx={{
             position: "relative",
@@ -321,26 +321,25 @@ export default function MapPage() {
             width: "100%",
           }}
         >
-          {!!features.length &&
-            features.map(
-              (el, i) =>
-                placesList.find((place) => place === el.place_type[0]) && (
-                  <Typography
-                    key={i}
-                    display={"inline"}
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => {
-                      if (map) {
-                        const bound = new LngLatBounds(el.bbox as any);
-                        map.fitBounds(bound);
-                      }
-                    }}
-                  >
-                    {i > 0 && ", "}
-                    {el.text}
-                  </Typography>
-                )
-            )}
+          {features.map(
+            (el, i) =>
+              placesList.find((place) => place === el.place_type[0]) && (
+                <Typography
+                  key={i}
+                  display={"inline"}
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => {
+                    if (map) {
+                      const bound = new LngLatBounds(el.bbox as any);
+                      map.fitBounds(bound);
+                    }
+                  }}
+                >
+                  {i > 0 && ", "}
+                  {el.text}
+                </Typography>
+              )
+          )}
         </Box>
       )}
       <CardComponent
